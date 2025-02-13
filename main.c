@@ -3,6 +3,7 @@
  (c) Charles Petzold, 1998
  −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−*/
 #include <windows.h>
+#include <stdio.h>
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -22,6 +23,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
     wndclass.lpszMenuName = NULL;
     wndclass.lpszClassName = szAppName;
+    printf("Hello, Windows 98!\n");
     if (!RegisterClass(&wndclass))
     {
         MessageBox(NULL, TEXT("This program requires Windows NT!"),
@@ -53,10 +55,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     HDC hdc;
     PAINTSTRUCT ps;
     RECT rect;
+    int test = 100;
+    long long test2 = 100000000000;
+
+    char *test3 = "Hello, Windows 98!";
     switch (message)
     {
     case WM_CREATE:
-        PlaySound(TEXT("hellowin.wav"), NULL, SND_FILENAME | SND_ASYNC);
+        PlaySound(TEXT("C:\\Users\\ousoo\\Downloads\\Town of Lucent.wav"), NULL, SND_FILENAME | SND_ASYNC);
         return 0;
     case WM_PAINT:
         hdc = BeginPaint(hwnd, &ps);
