@@ -3,21 +3,31 @@
 #endif 
 
 #include <windows.h>
+#include <GL/glew.h>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
     // Register the window class.
-    const wchar_t CLASS_NAME[]  = L"Sample Window Class";
-    
-    WNDCLASS wc = { 0 };
-
+    const wchar_t CLASS_NAME[] = L"Sample Window Class";
+    WNDCLASS wc = {0};
+    wc.lpfnWndProc = WindowProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = CLASS_NAME;
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+    //WNDCLASS wc = { 0 };
     wc.lpfnWndProc   = WindowProc;
     wc.hInstance     = hInstance;
-    wc.lpszClassName = CLASS_NAME;
 
-    RegisterClass(&wc);
+    if(!RegisterClass(&wc))
+    {
+        MessageBox(NULL, TEXT("This program requires Windows NT!"), L"ERROR", MB_ICONERROR | MB_OK);
+        return 0;
+    }
 
     // Create the window.
 
@@ -41,10 +51,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine,
         return 0;
     }
 
-    ShowWindow(hwnd, nCmdShow);
-
+    ShowWindow(hwnd, iCmdShow);
+    UpdateWindow(hwnd);
     // Run the message loop.
-
     MSG msg = {0};
     while (GetMessage(&msg, NULL, 0, 0) > 0)
     {
@@ -52,11 +61,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine,
         DispatchMessage(&msg);
     }
 
-    return 0;
+    return msg.wParam;
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+
     switch (uMsg)
     {
     case WM_DESTROY:
@@ -67,13 +77,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
-
+            
             // All painting occurs here, between BeginPaint and EndPaint.
 
             FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
-
+            DrawText(hdc, TEXT("Hello this is my window"), -1, &ps.rcPaint, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
             EndPaint(hwnd, &ps);
+            
         }
+    case WM_CREATE:
+        PlaySound(TEXT("C:\\Users\\ousoo\\Downloads\\Town of Lucent.wav"), NULL, SND_FILENAME | SND_ASYNC);
+
         return 0;
 
     }
