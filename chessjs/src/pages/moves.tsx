@@ -12,17 +12,18 @@ const checkAttacks = (distance: number, direction: Array<string>, board: Array<s
 
     //attacks will hold all of the attacks a peice can make. 
     //[ [3,2],[4,5] ]etc.
-
+    console.log(direction)
     if(direction.includes('dr')) {
-        //check for attacks in diagright position
-        if(board[row + 1][col + 1] != ""){
-            attacks.push([row + 1, col + 1])
+        // col + distance (change later)
+        if(board[row - 1][col + 1] != ""){
+            attacks.push([row - 1, col + 1])
+            console.log('attack found r+1 c+1')
         }
     }
     if(direction.includes('dl')){
-        console.log('dl')
         if(board[row - 1][col - 1] != ""){
             attacks.push([row - 1, col - 1])
+            console.log('attack found r-1 c-1')
         }
     }
     //console.log('new possible attacks', attacks)
@@ -38,7 +39,7 @@ export const getPossiblePawnMoves = (row: number, col: number, team: string, boa
             //check for attacks first
             //wont worry about enpessants for now because i dont even know what they are
             let attacks: Array<number[]> = checkAttacks(1, ['dr', 'dl'], board, row, col, team);
-            console.log(attacks);
+            console.log('attacks',attacks);
             if(row == 6){ //starting position
                 possibleMoves.push([row - 1, col], [row - 2, col])
                 //check for attacks
@@ -51,15 +52,17 @@ export const getPossiblePawnMoves = (row: number, col: number, team: string, boa
 
             }else{
                 //check for promotion later
-                possibleMoves.push([row - 1, col])
+                if((board[row - 1][col]) == ""){
+                    possibleMoves.push([row - 1, col])
+                }
             }
 
             possibleMoves = possibleMoves.concat(attacks)
-            console.log(possibleMoves)
+            
             break;
     
     }
-
+    console.log(possibleMoves)
     return possibleMoves;
 	
 }

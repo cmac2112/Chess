@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves } from "./moves";
 
-
-
 const Home = () => {
   const [selected, setSelected] = useState({
     peice: "",
@@ -35,30 +33,56 @@ const Home = () => {
     // calculate possible moves like for pawn
     // possible moves [x, y + 2 or 1] if white, [x, y - 2 or 1] if black calculate side steps etc and disable moving anywhere
 
-    // this is going to get real fugly
-    console.log('selected', peice, row, col)
-  
-    switch (peice){
-      case "wpawn":
-        possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
-        break;
-      case "pawn":
-        possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
-        break;
-    }
-    
+
+   //if selected already exists here then that means we are trying to attack
     
     if (selected.peice == "" && selected.team == "") {
+      
+      console.log('selected', peice, team, row, col) //initial selection of a peice
+      switch (peice){
+        case "wpawn":
+          possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
+          break;
+        case "pawn":
+          possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
+          break;
+      }
       setSelected({ peice, team, row, col });
       return;
-    } else if (selected.col === col && selected.row === row) { //handle selecting the same item again
+    } else if (selected.col === col && selected.row === row) { //handle selecting the same item again to deselect
+      console.log('resetting')
         setSelected({ peice: "", team: "", row: -1, col: -1 })
-    }else{
+    }else if(selected.peice != "" && team != "" && selected.team != team) { //capture selection of a peice
+      //handle capturing a peice
+      console.log('capture', peice, team, row, col)
+      console.log('capturer', selected.peice, selected.team, selected.row, selected.col)
       
-
-      //highlightPossibleMoves(possibleMoves.current);
+      //check to see if the capture move is valid
+      if (possibleMoves.current) {
+        const isValidMove = possibleMoves.current.some(
+          ([r, c]) => r === row && c === col
+        );
+      if(isValidMove){
+        console.log('move is valid')
+      
+      const newBoard = [...testboard];
+      newBoard[row][col] = "";
+      newBoard[selected.row][selected.col] = ""
+      newBoard[row][col] = selected.peice
+      
+      setTestBoard(newBoard);
+      setSelected({peice: "", team: "", row: -1, col: -1})
+      }
+      }
+    
+    }else{
+      //if something is selected this will run down here
+  
       let check = false;
+      console.log('home moves----------', possibleMoves.current);
+      
         possibleMoves.current.forEach((e) => {
+          console.log('possible move', e[0], e[1])
           if(e[0] == row && e[1] == col){
             console.log('good move');
             check = true;
@@ -69,7 +93,6 @@ const Home = () => {
         
         //handle moving the peice to the new location, dont worry about peice rules at the moment
         if(check){
-        console.log(selected, row, col);
         const newBoard = [...testboard]; //create a copy of the board
         newBoard[row][col] = selected.peice; //copy the peice to the new board at the selected location
         newBoard[selected.row][selected.col] = ""; //remove the peice from the old location

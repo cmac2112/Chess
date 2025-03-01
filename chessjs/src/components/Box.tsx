@@ -27,6 +27,7 @@ const Box: React.FC<BoxProps> = ({
       }
       try{
         if (team === "white") {
+          //if this gets built and published to pages this will probably have to change
           const image = await import(`../assets/white/${peice}.svg`);
           setImagePath(image.default);
         }else if (team === "black") {
