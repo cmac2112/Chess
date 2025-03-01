@@ -11,7 +11,6 @@ const Home = () => {
   });
 
   const possibleMoves = useRef<number[][]>([]);
-
   const [testboard, setTestBoard] = useState([
     ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
     ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
@@ -23,6 +22,8 @@ const Home = () => {
     ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]);
 
+  //flip this flag for turn
+  const [turn, setTurn] = useState<boolean>(false);
   
   const handleOnClick = (
     peice: string,
@@ -77,10 +78,8 @@ const Home = () => {
     
     }else{
       //if something is selected this will run down here
-  
       let check = false;
       console.log('home moves----------', possibleMoves.current);
-      
         possibleMoves.current.forEach((e) => {
           console.log('possible move', e[0], e[1])
           if(e[0] == row && e[1] == col){
@@ -89,8 +88,6 @@ const Home = () => {
           }
           }
         )
-        
-        
         //handle moving the peice to the new location, dont worry about peice rules at the moment
         if(check){
         const newBoard = [...testboard]; //create a copy of the board
@@ -125,7 +122,6 @@ const Home = () => {
             isSelected={selected.row === i && selected.col === j}
           />
         );
-      
       } else {
         row.push(
           <Box

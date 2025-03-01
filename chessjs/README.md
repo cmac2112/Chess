@@ -1,3 +1,74 @@
+# Chess in react
+
+This is a simple remaking of chess in react using no outside sources or help as much as possible
+
+## List of times i queried AI, Count: 1
+1. Had an issue where captures were not being processed correctly
+```
+switch (peice){
+        case "wpawn":
+          possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
+          break;
+        case "pawn":
+          possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
+          break;
+      }
+      setSelected({ peice, team, row, col });
+      return;
+
+
+if (selected.peice == "" && selected.team == "") {
+      
+      console.log('selected', peice, team, row, col) //initial selection of a peice
+      
+    } else if (selected.col === col && selected.row === row) { //handle selecting the same item again to deselect
+      console.log('resetting')
+        setSelected({ peice: "", team: "", row: -1, col: -1 })
+    }else if(selected.peice != "" && team != "" && selected.team != team) { //capture selection of a peice
+      //handle capturing a peice
+      console.log('capture', peice, team, row, col)
+      console.log('capturer', selected.peice, selected.team, selected.row, selected.col)
+      
+      //check to see if the capture move is valid
+      if (possibleMoves.current) {
+        const isValidMove = possibleMoves.current.some(
+          ([r, c]) => r === row && c === col
+        );
+      if(isValidMove){
+        console.log('move is valid')
+      
+      const newBoard = [...testboard];
+      newBoard[row][col] = "";
+      newBoard[selected.row][selected.col] = ""
+      newBoard[row][col] = selected.peice
+      
+      setTestBoard(newBoard);
+      setSelected({peice: "", team: "", row: -1, col: -1})
+      }
+      }
+```
+this was happening because when a user selects a piece initially, that piece gets stored in the state where they can then select another box on the board to 'move' that piece to. However when capturing a piece, the possible moves were being calculate because it automatically happens at the top of the function so it would alter the array of moves before checking them to see if it was a valid move which would give bad results.
+
+The fix was to move the possible move calculations after the selection of the piece which will also allow me to color moves in css eventually as well
+
+<u>AI did not figure this out</u>
+
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+
+
+
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
