@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Box from "../components/Box";
-import { getPossiblePawnMoves } from "./moves";
+import { getPossiblePawnMoves, getPossibleRookMoves } from "./moves";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -12,14 +12,14 @@ const Home = () => {
 
   const possibleMoves = useRef<number[][]>([]);
   const [testboard, setTestBoard] = useState([
-    ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
-    ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
+    ["rook", "", "bishop", "", "king", "bishop", "knight", "rook"],
+    ["pawn", "", "pawn", "", "pawn", "pawn", "pawn", "pawn"],
+    ["", "", "", "", "", "", "", ""],
+    ["", "wrook", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
-    ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
+    ["wpawn", "", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
+    ["wrook","","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]);
 
   //flip this flag for turn
@@ -33,8 +33,6 @@ const Home = () => {
   ) => {
     // calculate possible moves like for pawn
     // possible moves [x, y + 2 or 1] if white, [x, y - 2 or 1] if black calculate side steps etc and disable moving anywhere
-
-
    //if selected already exists here then that means we are trying to attack
     
     if (selected.peice == "" && selected.team == "") {
@@ -43,6 +41,9 @@ const Home = () => {
       switch (peice){
         case "wpawn":
           possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
+          break;
+        case "wrook":
+          possibleMoves.current = getPossibleRookMoves(row, col, team, testboard);
           break;
         case "pawn":
           possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
@@ -61,7 +62,7 @@ const Home = () => {
       //check to see if the capture move is valid
       if (possibleMoves.current) {
         const isValidMove = possibleMoves.current.some(
-          ([r, c]) => r === row && c === col
+          ([r, c]) => r === row && c === col && team != selected.team
         );
       if(isValidMove){
         console.log('move is valid')

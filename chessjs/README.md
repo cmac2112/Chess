@@ -2,6 +2,10 @@
 
 This is a simple remaking of chess in react using no outside sources or help as much as possible
 
+A walkthrough video of the code will be made at some point to help other people better understand.
+
+"The inner workings of my mind are an enigma" - Patrick Star
+
 ## List of times i queried AI, Count: 1
 1. Had an issue where captures were not being processed correctly
 ```
