@@ -40,6 +40,107 @@ export const getPossiblePawnMoves = (
   console.log(possibleMoves);
   return possibleMoves;
 };
+export const getPossibleBishopMoves = (
+  row: number,
+  col: number,
+  team: string,
+  board: Array<string[]>
+): number[][] =>{
+  let possibleMoves: Array<number[]> = []
+
+  let diagLeft: Array<number[]> = []
+  let diagRight: Array<number[]> = []
+
+  let afterPieceRight: boolean = false;
+  let afterPeiceLeft: boolean = false;
+
+  //these will iterate through and find the starting place
+  //building the movement array from boarder in instead of from
+  //piece out
+  let leftRow = row;
+  let leftCol = col;
+
+  while(leftRow > 0 && leftCol > 0){
+    leftRow -= 1;
+    leftCol -= 1;
+  }
+  
+  let rightRow = row;
+  let rightCol = col;
+
+  while(rightRow > 0 && rightCol < 7){
+    rightCol += 1;
+    rightRow -= 1;
+  }
+
+
+  console.log(rightRow, rightCol)
+  console.log(leftRow, leftCol);
+  let j = rightCol;
+  for(let k = rightRow; k < 7; k++){
+    console.log(board[k][j], [k], [j])
+    if(board[k][j] == undefined){
+      break;
+    }
+    if(k == row){
+      j -= 1;
+      afterPieceRight = true;
+      continue;
+    }
+    if(board[k][j] == ""){
+      diagRight.push([k, j])
+    }else if(board[k][j] != ""){
+      if(!afterPieceRight){
+        diagRight = [];
+      }
+      if(!board[k][j].startsWith("w")){
+        diagRight.push([k, j])
+      }
+      if(afterPieceRight){
+        break;
+      }
+    }
+    j -= 1;
+    if(j < 0){
+      break;
+    }
+  }
+
+  let k = leftCol;
+  for(let i = leftRow; i < 7; i++){
+    if(board[i][k] == undefined){
+      break;
+    }
+    if(i == row){
+      k += 1
+      afterPeiceLeft = true;
+      continue;
+    }
+    if(board[i][k] == ""){
+      diagLeft.push([i, k])
+    }else if(board[i][k] != ""){
+      if(!afterPeiceLeft){
+        diagLeft = [];
+      }
+      if(!board[i][k].startsWith("w")){
+        diagLeft.push([i, k])
+      }
+      if(afterPeiceLeft){
+        break;
+      }
+    }
+    
+    k += 1;
+    if(k > 7){
+      break;
+    }
+  }
+  possibleMoves = possibleMoves.concat(diagLeft);
+  possibleMoves = possibleMoves.concat(diagRight);
+  console.log(possibleMoves)
+  return possibleMoves;
+
+}
 export const getPossibleRookMoves = (
   row: number,
   col: number,
@@ -50,112 +151,58 @@ export const getPossibleRookMoves = (
 
   switch (team) {
     case "white":
-      //two pointer, capture entire column and array, two loops iterate through col and array, mark closest
-      //store closet peice, continue iterating closer to selected peice
-      // when one pointer beats another, just keep it on the peice, let the other keep iterating
-      // once all pointers are at the peice, take the distance at which the last closest peice was
-      // then calculate moves based off of that
+      let tempMoveHorizontal: Array<number[]> = [];
+      let rookCheckHorizontal: boolean = false;
 
-      //column loop
-      let p1 = 0;
-      let p2 = 7;
+      let tempMoveVertical: Array<number[]> = [];
+      let rookCheckVertical: boolean = false;
 
-      let p1Closest = -1;
-      let p2Closest = -1;
-
-      let c1 = 0;
-      let c2 = 7;
-
-      let c2Closest = -1;
-      let c1Closest = -1;
-
-      while (p1 != p2) {
-        if (p1 != col) {
-          if (board[row][p1] == "") {
-            p1 += 1;
-          } else if (board[row][p1] != "") {
-            p1Closest = col - p1 - 1;
-            p1 += 1;
-          }
+      for(let i = 0; i < 8; i++){
+        if(i == row){
+          rookCheckVertical = true;
+          continue;
         }
-    
-
-        if (p2 != col) {
-          if (board[row][p2] == "") {
-            p2 -= 1;
-          } else if (board[row][p1] != "") {
-            p2Closest = p2 - col - 1;
-            p2 -= 1;
+        if(board[i][col] == ""){
+          tempMoveVertical.push([i, col]);
+        }else if(board[i][col] != ""){
+          if(!rookCheckVertical){
+            tempMoveVertical = [];
+          }
+          if(!board[i][col].startsWith("w")){
+            tempMoveVertical.push([i, col])
+          }
+          if(rookCheckVertical){
+            break;
           }
         }
       }
-
-      //vertical checks
-      while (c1 != c2) {
-        console.log(c1);
-        if (c1 != row) {
-          if (board[c1][col] == "") {
-            c1 += 1;
-          } else if (board[c1][col] != "") {
-            c1Closest = row - c1 - 1;
-            c1 += 1;
+      
+      for(let i = 0; i < 8; i++){
+        if(i == col){
+          rookCheckHorizontal = true;
+          continue;
+        }
+        if(board[row][i] == ""){
+          tempMoveHorizontal.push([row, i])
+        }else if(board[row][i] != ""){
+          if(!rookCheckHorizontal){
+            tempMoveHorizontal = [];
+          }
+          if(!(board[row][i]).startsWith("w")){
+            tempMoveHorizontal.push([row, i])
+          }
+          if(rookCheckHorizontal){
+            break;
           }
         }
-        if (c2 != row) {
-          if (board[c2][col] == "") {
-            c2 -= 1;
-          } else if (board[c2][col] != "") {
-            c2Closest = c2 - row - 1;
-            c2 -= 1;
-          }
-        }
       }
-      console.log(p1Closest, p2Closest, c1Closest, c2Closest);
-
-      //p1closest negative col direction
-      if(p1Closest != -1){
-        while (p1Closest != 0) {
-          possibleMoves.push([row, col - p1Closest]);
-          p1Closest -= 1;
-        }
-      }else{
-        for(let i = col; i > 0; i--){
-            possibleMoves.push([row, col - i ])
-        }
-      }
-      if (p2Closest != -1) {
-        while (p2Closest != 0) {
-          possibleMoves.push([row, col + p2Closest]);
-          p2Closest -= 1;
-        }
-      }else{
-        for(let i = col; i < 7; i++){
-            possibleMoves.push([row, i + 1])
-        }
-      }
-      if(c1Closest != -1){
-        while(c1Closest != 0){
-            possibleMoves.push([row - c1Closest, col]);
-            c1Closest -= 1;
-        }
-      }else{
-        for(let i = row; i > 0; i--){
-            possibleMoves.push([row - i, col])
-        }
-      }
-      if(c2Closest != -1){
-        while(c2Closest != 0){
-            possibleMoves.push([row + c2Closest, col])
-            c2Closest -= 1;
-        }
-      }else{
-        for(let i = row; i < 7; i++){
-            possibleMoves.push([i + 1, col])
-        }
-      }
-      console.log(possibleMoves);
+      
+        
+      possibleMoves = possibleMoves.concat(tempMoveHorizontal);
+      possibleMoves = possibleMoves.concat(tempMoveVertical);
       break;
   }
+
   return possibleMoves;
 };
 const checkAttacks = (

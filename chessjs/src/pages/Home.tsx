@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Box from "../components/Box";
-import { getPossiblePawnMoves, getPossibleRookMoves } from "./moves";
+import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves } from "./moves";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -12,11 +12,11 @@ const Home = () => {
 
   const possibleMoves = useRef<number[][]>([]);
   const [testboard, setTestBoard] = useState([
-    ["rook", "", "bishop", "", "king", "bishop", "knight", "rook"],
+    ["", "", "bishop", "", "king", "bishop", "knight", "rook"],
     ["pawn", "", "pawn", "", "pawn", "pawn", "pawn", "pawn"],
     ["", "", "", "", "", "", "", ""],
-    ["", "wrook", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
+    ["", "", "wbishop", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["wpawn", "", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
     ["wrook","","wbishop","wqueen","wking","wbishop","wknight","wrook",],
@@ -44,6 +44,9 @@ const Home = () => {
           break;
         case "wrook":
           possibleMoves.current = getPossibleRookMoves(row, col, team, testboard);
+          break;
+        case "wbishop":
+          possibleMoves.current = getPossibleBishopMoves(row, col, team, testboard);
           break;
         case "pawn":
           possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
@@ -79,8 +82,7 @@ const Home = () => {
     
     }else{
       //if something is selected this will run down here
-      let check = false;
-      console.log('home moves----------', possibleMoves.current);
+      let check = false;      
         possibleMoves.current.forEach((e) => {
           console.log('possible move', e[0], e[1])
           if(e[0] == row && e[1] == col){
