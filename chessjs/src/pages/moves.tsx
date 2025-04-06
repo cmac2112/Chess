@@ -73,12 +73,8 @@ export const getPossibleBishopMoves = (
     rightRow -= 1;
   }
 
-
-  console.log(rightRow, rightCol)
-  console.log(leftRow, leftCol);
   let j = rightCol;
   for(let k = rightRow; k < 7; k++){
-    console.log(board[k][j], [k], [j])
     if(board[k][j] == undefined){
       break;
     }
@@ -254,3 +250,57 @@ const checkAttacks = (
   //console.log('new possible attacks', attacks)
   return attacks;
 };
+
+export const getPossibleKnightMoves = (row: number, col: number, team: string, board: Array<string[]>): number[][] => {
+
+  let possibleMoves: Array<number[]> = [];
+
+  console.log(team);
+  if((row - 2 >= 0 && col - 1 >= 0) && ((team == "white" ? !board[row - 2][col - 1].startsWith("w") : board[row - 2][col - 1].startsWith("w")) || board[row - 1][col - 2] == "")) {
+    possibleMoves.push([row - 2, col - 1]);
+  }
+  if((row - 1 >= 0 && col - 2 >= 0) && ((team == "white" ? !board[row - 1][col - 2].startsWith("w") : board[row - 1][col - 2].startsWith("w")) || board[row - 1][col - 2] == "")){
+    possibleMoves.push([row - 1, col - 2]);
+  }
+  //second quadrant
+  if((row - 2 >= 0 && col + 1 <= 7) && ((team == "white" ? !board[row - 2][col + 1].startsWith("w") : board[row - 2][col + 1].startsWith("w")) || board[row - 2][col + 1] == "" && board[row - 2][col + 1] != undefined)){
+    possibleMoves.push([row - 2, col + 1])
+  }
+  if((row - 1 >= 0 && col + 2 <= 7) && ((team == "white" ? !board[row - 1][col + 2].startsWith("w") : board[row - 1][col + 2].startsWith("w")) || board[row - 1][col + 2] == "")){
+    possibleMoves.push([row - 1, col + 2])
+  }
+  //third
+  if((row + 1 <= 7 && col + 2 <= 7) && ((team == "white" ? !board[row + 1][col + 2].startsWith("w") : board[row + 1][col + 2].startsWith("w")) || board[row + 1][col + 2] == "")){
+    possibleMoves.push([row + 1, col + 2])
+  }
+  if((row + 2 <= 7 && col + 1 <= 7) && ((team == "white" ? !board[row + 2][col + 1].startsWith("w") : board[row + 2][col + 1].startsWith("w")) || board[row + 2][col + 1] == "")){
+    possibleMoves.push([row + 2, col + 1])
+  }
+  //forth 
+  if((row + 1 <= 7 && col - 2 >= 0) && ((team == "white" ? !board[row + 1][col - 2].startsWith("w") : board[row + 1][col - 2].startsWith("w")) || board[row + 1][col - 2] == "")){
+    possibleMoves.push([row + 1, col - 2])
+  }
+  if((row + 2 <= 7 && col - 1 >= 0) && ((team == "white" ? !board[row + 2][col - 1].startsWith("w") : board[row + 2][col - 1].startsWith("w")) || board[row + 2][col - 1] == "")){
+    possibleMoves.push([row + 2, col - 1])
+  }
+  console.log(possibleMoves);
+  return possibleMoves;
+
+}
+
+export const getPossibleKingMoves = (row: number, col: number, team: string, board:Array<string[]>):Array<number[]> =>{
+
+  let possibleMoves: Array<number[]> = []
+
+  let otherTeamMoves: Array<number[]> = []
+
+  for(let i = 0; i < 7; i ++){
+    //outer is going to keep track of the row
+    for(let k = 0; k < 7; k++){
+      //inner loop is going to iterate from left to right "col" 
+    }
+  }
+  
+
+  return possibleMoves;
+}

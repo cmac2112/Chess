@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Box from "../components/Box";
-import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves } from "./moves";
+import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves } from "./moves";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -14,15 +14,16 @@ const Home = () => {
   const [testboard, setTestBoard] = useState([
     ["", "", "bishop", "", "king", "bishop", "knight", "rook"],
     ["pawn", "", "pawn", "", "pawn", "pawn", "pawn", "pawn"],
+    ["", "", "pawn", "wpawn", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "wbishop", "", "", "", "", ""],
+    ["", "", "", "wking", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["wpawn", "", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
-    ["wrook","","wbishop","wqueen","wking","wbishop","wknight","wrook",],
+    ["wrook","wbishop","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]);
 
   //flip this flag for turn
+  
   const [turn, setTurn] = useState<boolean>(false);
   
   const handleOnClick = (
@@ -48,9 +49,17 @@ const Home = () => {
         case "wbishop":
           possibleMoves.current = getPossibleBishopMoves(row, col, team, testboard);
           break;
+        case "wknight":
+          possibleMoves.current = getPossibleKnightMoves(row, col, team, testboard);
+          break;
+        case "wking":
+          possibleMoves.current = getPossibleKingMoves(row, col, team, testboard);
+          break;
         case "pawn":
           possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
           break;
+        case "knight":
+          possibleMoves.current = getPossibleKnightMoves(row, col, team, testboard);
       }
       setSelected({ peice, team, row, col });
       return;

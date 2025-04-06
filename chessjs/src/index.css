@@ -15,7 +15,9 @@
 .highlight{
   background-color: #ff0000;
 }
-
+/*
+fix board in place do not allow resize TODO
+ */
 .box:hover{
   cursor: pointer;
   background-color: #d0d0d0;
