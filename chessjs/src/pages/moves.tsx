@@ -201,6 +201,8 @@ export const getPossibleRookMoves = (
 
   return possibleMoves;
 };
+
+//refactor and remove this
 const checkAttacks = (
   distance: number,
   direction: Array<string>,
@@ -209,25 +211,11 @@ const checkAttacks = (
   col: number,
   team: string
 ): number[][] => {
-  //l: left
-  //r: right,
-  //dr: diag right,
-  //dl: diag left,
-  //f: forward
-  //b: backward
-  //br: backrightdiag
-  //bl: backleftdiag
-  //h: horse --handle in function
   let attacks: Array<number[]> = [];
 
-  //attacks will hold all of the attacks a peice can make.
-  //[ [3,2],[4,5] ]etc.
   console.log(direction);
 
   if (direction.includes("dr")) {
-    // doesnt account for same team TODO
-    //only accounts for pawns right now
-    // col + distance (change later)
     if (board[row - 1][col + 1] != "") {
       if (team == "white" && !board[row - 1][col + 1].startsWith("w")) {
         attacks.push([row - 1, col + 1]);
@@ -288,6 +276,7 @@ export const getPossibleKnightMoves = (row: number, col: number, team: string, b
 
 }
 
+//todo for next weekend, King moves, queen moves, turn system
 export const getPossibleKingMoves = (row: number, col: number, team: string, board:Array<string[]>):Array<number[]> =>{
 
   let possibleMoves: Array<number[]> = []
