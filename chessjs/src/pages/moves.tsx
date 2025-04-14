@@ -239,6 +239,7 @@ const checkAttacks = (
   return attacks;
 };
 
+//refactor this mess
 export const getPossibleKnightMoves = (row: number, col: number, team: string, board: Array<string[]>): number[][] => {
 
   let possibleMoves: Array<number[]> = [];
