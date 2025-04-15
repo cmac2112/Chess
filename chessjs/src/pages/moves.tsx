@@ -22,7 +22,7 @@ export const getPossiblePawnMoves = (
         team
       );
 
-      console.log("attacks", attacks);
+      //console.log("attacks", attacks);
       if (row == 6) {
         //starting position
         possibleMoves.push([row - 1, col], [row - 2, col]);
@@ -37,7 +37,7 @@ export const getPossiblePawnMoves = (
       break;
     // make case statement for black peices
   }
-  console.log(possibleMoves);
+  //console.log(possibleMoves);
   return possibleMoves;
 };
 export const getPossibleBishopMoves = (
@@ -133,7 +133,7 @@ export const getPossibleBishopMoves = (
   }
   possibleMoves = possibleMoves.concat(diagLeft);
   possibleMoves = possibleMoves.concat(diagRight);
-  console.log(possibleMoves)
+  //console.log(possibleMoves)
   return possibleMoves;
 
 }
@@ -213,13 +213,13 @@ const checkAttacks = (
 ): number[][] => {
   let attacks: Array<number[]> = [];
 
-  console.log(direction);
+  //console.log(direction);
 
   if (direction.includes("dr")) {
     if (board[row - 1][col + 1] != "") {
       if (team == "white" && !board[row - 1][col + 1].startsWith("w")) {
         attacks.push([row - 1, col + 1]);
-        console.log("attack found r-1 c+1");
+        //console.log("attack found r-1 c+1");
       } else if (team == "black" && board[row - 1][col + 1].startsWith("w")) {
         attacks.push([row - 1, col + 1]);
       }
@@ -229,7 +229,7 @@ const checkAttacks = (
     if (board[row - 1][col - 1] != "") {
       if (team == "white" && !board[row - 1][col - 1].startsWith("w")) {
         attacks.push([row - 1, col - 1]);
-        console.log("attack found r-1 c-1");
+        //console.log("attack found r-1 c-1");
       } else if (team == "black" && board[row - 1][col - 1].startsWith("w")) {
         attacks.push([row - 1, col + 1]);
       }
@@ -272,7 +272,7 @@ export const getPossibleKnightMoves = (row: number, col: number, team: string, b
   if((row + 2 <= 7 && col - 1 >= 0) && ((team == "white" ? !board[row + 2][col - 1].startsWith("w") : board[row + 2][col - 1].startsWith("w")) || board[row + 2][col - 1] == "")){
     possibleMoves.push([row + 2, col - 1])
   }
-  console.log(possibleMoves);
+  //console.log(possibleMoves);
   return possibleMoves;
 
 }
@@ -284,12 +284,43 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
 
   let otherTeamMoves: Array<number[]> = []
 
+  console.log(team);
   for(let i = 0; i < 7; i ++){
     //outer is going to keep track of the row
     for(let k = 0; k < 7; k++){
       //inner loop is going to iterate from left to right "col" 
+      //this will probably be ugly but im unsure of any better way to do this at the moment
+
+      //we have the selected team
+      let peice = board[i][k];
+      console.log(peice);
+      if(team == "white"){
+        const otherTeam = "black";
+        //console.log('entered switch')
+      switch(peice){
+          case "":
+          break;
+          case "pawn":
+            otherTeamMoves.concat(getPossiblePawnMoves(i, k, otherTeam, board));
+            break;
+          case "knight":
+            otherTeamMoves.concat(getPossibleKnightMoves(i, k, otherTeam, board));
+            break;
+          case "bishop":
+            otherTeamMoves.concat(getPossibleBishopMoves(i, k, otherTeam, board));
+            break;
+          case "rook":
+            otherTeamMoves.concat(getPossibleRookMoves(i, k, otherTeam, board));
+            break
+          default:
+            break;
+          
+      }
     }
   }
+}
+  console.log("moves below me")
+  console.log(otherTeamMoves);
   
 
   return possibleMoves;
