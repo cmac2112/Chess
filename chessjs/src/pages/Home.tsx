@@ -55,11 +55,28 @@ const Home = () => {
         case "wking":
           possibleMoves.current = getPossibleKingMoves(row, col, team, testboard);
           break;
+        case "wqueen":
+          //possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
+          break;
         case "pawn":
           possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
           break;
         case "knight":
           possibleMoves.current = getPossibleKnightMoves(row, col, team, testboard);
+          break;
+        case "rook":
+          possibleMoves.current = getPossibleRookMoves(row, col, team, testboard);
+          break;
+        case "bishop":
+          possibleMoves.current = getPossibleBishopMoves(row, col, team, testboard);
+          break;
+        case "king":
+          possibleMoves.current = getPossibleKingMoves(row, col, team, testboard);
+          break;
+        case "queen":
+          //possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
+          break;
+
       }
       setSelected({ peice, team, row, col });
       return;
