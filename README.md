@@ -10,3 +10,19 @@ All i can do is create a window and i dont know enough about C to do anything ot
 
 all: window.c
 	gcc -Werror -o window window.c -lgdi32 -lwinmm
+
+
+
+## future small projects
+1. investigate a way to allow me to upload notes and have it be put into my obsidian note vault (and actually continue to use my obsitian note vault)
+1a. obviously it would live on some server somewhere, only i could upload files there, of course bank security may block so maybe look into some ui that allows me to put my notes in there then organize them when i get home
+1b. Possibly train AI to organize it for me
+2. my own website - cant believe i literally still havent made my own personal portfolio website yet
+
+## big projects
+1. Compiler
+1a: always wanted to build one, i think it would teach me more about computers than any other project
+2. physics engine/game engine
+2a. Once again always been interesting in building some sort of game, this could be done in c# as that might be the easiest
+3. DIY drone
+3a. getting into the embedded sphere, make some sort of microprocesser to allow me to build my own drone or something
