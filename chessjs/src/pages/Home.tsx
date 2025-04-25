@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Box from "../components/Box";
-import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves } from "./moves";
+import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "./moves";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -56,7 +56,7 @@ const Home = () => {
           possibleMoves.current = getPossibleKingMoves(row, col, team, testboard);
           break;
         case "wqueen":
-          //possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
           break;
         case "pawn":
           possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
@@ -74,7 +74,7 @@ const Home = () => {
           possibleMoves.current = getPossibleKingMoves(row, col, team, testboard);
           break;
         case "queen":
-          //possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
           break;
 
       }

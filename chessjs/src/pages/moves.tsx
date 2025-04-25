@@ -325,3 +325,11 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
 
   return possibleMoves;
 }
+
+export const getPossibleQueenMoves = (row: number, col: number, team: string, board:Array<string[]>): Array<number[]> =>{
+
+  let possibleMoves: Array<number[]> = [];
+
+  //call all move getters except for knight and pawn then concat the entire list together to get all of the possible queen moves
+  return possibleMoves
+}
