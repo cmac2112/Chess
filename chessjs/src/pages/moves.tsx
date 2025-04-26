@@ -4,40 +4,62 @@ export const getPossiblePawnMoves = (
   team: string,
   board: Array<string[]>
 ): number[][] => {
+
   //calculate moves based off of the current position, make sure moves are not invalid and off of the board,
   // if the pawn is not in its starting position do not allow it to move two spaces
 
+  //pawn promotions later here
+
+
   let possibleMoves: Array<number[]> = [];
+  
   switch (team) {
     case "white":
+      let attacks: Array<number[]> = []
+
       //check for attacks first
       //wont worry about enpessants for now because i dont even know what they are
       //add a check for out of bounds selections
-      let attacks: Array<number[]> = checkAttacks(
-        1,
-        ["dr", "dl"],
-        board,
-        row,
-        col,
-        team
-      );
-
-      //console.log("attacks", attacks);
+      
+      if ((row - 1 >= 0 && col + 1 <= 7) && (board[row - 1][col + 1] != "") && (!board[row - 1][col + 1].startsWith("w"))) {
+            attacks.push([row - 1, col + 1]);
+          }
+        
+      if ((row - 1 >= 0 && col - 1 >= 0) && (board[row - 1][col - 1] != "") && (!board[row - 1][col - 1].startsWith("w"))) {
+            attacks.push([row - 1, col - 1]);
+          }
       if (row == 6) {
         //starting position
-        possibleMoves.push([row - 1, col], [row - 2, col]);
-      } else {
+        possibleMoves.push([row - 2, col]);
+      } 
         //check for promotion later
-        if (board[row - 1][col] == "") {
+      if ((row - 1 >= 0) && board[row - 1][col] == "") {
           possibleMoves.push([row - 1, col]);
         }
-      }
+      
       possibleMoves = possibleMoves.concat(attacks);
-
       break;
-    // make case statement for black peices
+    case "black":
+      let blackAttacks: Array<number[]> = []
+
+      if ((row + 1 <= 7 && col + 1 <= 7) && (board[row + 1][col + 1] != "") && (board[row + 1][col + 1].startsWith("w"))) {
+        blackAttacks.push([row + 1, col + 1]);
+      }
+    
+      if ((row + 1 <= 7 && col - 1 >= 0) && (board[row + 1][col - 1] != "") && (board[row + 1][col - 1].startsWith("w"))) {
+        blackAttacks.push([row + 1, col - 1]);
+      }
+
+      if(row == 1){
+        possibleMoves.push([row + 2, col]);
+      }
+      
+      if((row + 1 <= 7) && board[row + 1][col] == ""){
+          possibleMoves.push([row + 1, col]);
+      }
+      
+      possibleMoves = possibleMoves.concat(blackAttacks);
   }
-  //console.log(possibleMoves);
   return possibleMoves;
 };
 export const getPossibleBishopMoves = (
@@ -46,7 +68,11 @@ export const getPossibleBishopMoves = (
   team: string,
   board: Array<string[]>
 ): number[][] =>{
+
   let possibleMoves: Array<number[]> = []
+
+  switch(team){
+    case "white":
 
   let diagLeft: Array<number[]> = []
   let diagRight: Array<number[]> = []
@@ -74,7 +100,7 @@ export const getPossibleBishopMoves = (
   }
 
   let j = rightCol;
-  for(let k = rightRow; k < 7; k++){
+  for(let k = rightRow; k < 8; k++){
     if(board[k][j] == undefined){
       break;
     }
@@ -103,7 +129,7 @@ export const getPossibleBishopMoves = (
   }
 
   let k = leftCol;
-  for(let i = leftRow; i < 7; i++){
+  for(let i = leftRow; i < 8; i++){
     if(board[i][k] == undefined){
       break;
     }
@@ -127,13 +153,107 @@ export const getPossibleBishopMoves = (
     }
     
     k += 1;
-    if(k > 7){
+    if(k > 8){
       break;
     }
   }
+
+
   possibleMoves = possibleMoves.concat(diagLeft);
   possibleMoves = possibleMoves.concat(diagRight);
+  break;
+
+  case "black":
+    
+  let diagLeftBlack: Array<number[]> = []
+  let diagRightBlack: Array<number[]> = []
+
+  let afterPieceRightBlack: boolean = false;
+  let afterPeiceLeftBlack: boolean = false;
+
+  //these will iterate through and find the starting place
+  //building the movement array from boarder in instead of from
+  //piece out
+  let leftRowBlack = row;
+  let leftColBlack = col;
+
+  while(leftRowBlack > 0 && leftColBlack > 0){
+    leftRowBlack -= 1;
+    leftColBlack -= 1;
+  }
+  
+  let rightRowBlack = row;
+  let rightColBlack = col;
+
+  while(rightRowBlack > 0 && rightColBlack < 7){
+    rightColBlack += 1;
+    rightRowBlack -= 1;
+  }
+
+  let p = rightColBlack;
+  for(let k = rightRowBlack; k < 8; k++){
+    if(board[k][p] == undefined){
+      break;
+    }
+    if(k == row){
+      p -= 1;
+      afterPieceRightBlack = true;
+      continue;
+    }
+    if(board[k][p] == ""){
+      diagRightBlack.push([k, p])
+    }else if(board[k][p] != ""){
+      if(!afterPieceRightBlack){
+        diagRightBlack = [];
+      }
+      if(board[k][p].startsWith("w")){
+        diagRightBlack.push([k, p])
+      }
+      if(afterPieceRightBlack){
+        break;
+      }
+    }
+    p -= 1;
+    if(p < 0){
+      break;
+    }
+  }
+
+  let n = leftColBlack;
+  for(let i = leftRowBlack; i < 8; i++){
+    if(board[i][n] == undefined){
+      break;
+    }
+    if(i == row){
+      n += 1
+      afterPeiceLeftBlack = true;
+      continue;
+    }
+    if(board[i][n] == ""){
+      diagLeftBlack.push([i, n])
+    }else if(board[i][n] != ""){
+      if(!afterPeiceLeftBlack){
+        diagLeftBlack = [];
+      }
+      if(board[i][n].startsWith("w")){
+        diagLeftBlack.push([i, n])
+      }
+      if(afterPeiceLeftBlack){
+        break;
+      }
+    }
+    
+    n += 1;
+    if(n > 8){
+      break;
+    }
+  }
+
+
+  possibleMoves = possibleMoves.concat(diagLeftBlack);
+  possibleMoves = possibleMoves.concat(diagRightBlack);
   //console.log(possibleMoves)
+}
   return possibleMoves;
 
 }
@@ -197,47 +317,64 @@ export const getPossibleRookMoves = (
       possibleMoves = possibleMoves.concat(tempMoveHorizontal);
       possibleMoves = possibleMoves.concat(tempMoveVertical);
       break;
+
+      case "black":
+      let tempMoveHorizontalBlack: Array<number[]> = [];
+      let rookCheckHorizontalBlack: boolean = false;
+
+      let tempMoveVerticalBlack: Array<number[]> = [];
+      let rookCheckVerticalBlack: boolean = false;
+
+      for(let i = 0; i < 8; i++){
+        if(i == row){
+          rookCheckVerticalBlack = true;
+          continue;
+        }
+        if(board[i][col] == ""){
+          tempMoveVerticalBlack.push([i, col]);
+        }else if(board[i][col] != ""){
+          if(!rookCheckVerticalBlack){
+            tempMoveVerticalBlack = [];
+          }
+          if(board[i][col].startsWith("w")){
+            tempMoveVerticalBlack.push([i, col])
+          }
+          if(rookCheckVerticalBlack){
+            break;
+          }
+        }
+      }
+      
+      for(let i = 0; i < 8; i++){
+        if(i == col){
+          rookCheckHorizontalBlack= true;
+          continue;
+        }
+        if(board[row][i] == ""){
+          tempMoveHorizontalBlack.push([row, i])
+        }else if(board[row][i] != ""){
+          if(!rookCheckHorizontalBlack){
+            tempMoveHorizontalBlack = [];
+          }
+          if((board[row][i]).startsWith("w")){
+            tempMoveHorizontalBlack.push([row, i])
+          }
+          if(rookCheckHorizontalBlack){
+            break;
+          }
+        }
+      }
+      
+        
+      possibleMoves = possibleMoves.concat(tempMoveHorizontalBlack);
+      possibleMoves = possibleMoves.concat(tempMoveVerticalBlack);
+      break;
   }
 
   return possibleMoves;
 };
 
 //refactor and remove this
-const checkAttacks = (
-  distance: number,
-  direction: Array<string>,
-  board: Array<string[]>,
-  row: number,
-  col: number,
-  team: string
-): number[][] => {
-  let attacks: Array<number[]> = [];
-
-  //console.log(direction);
-
-  if (direction.includes("dr")) {
-    if (board[row - 1][col + 1] != "") {
-      if (team == "white" && !board[row - 1][col + 1].startsWith("w")) {
-        attacks.push([row - 1, col + 1]);
-        //console.log("attack found r-1 c+1");
-      } else if (team == "black" && board[row - 1][col + 1].startsWith("w")) {
-        attacks.push([row - 1, col + 1]);
-      }
-    }
-  }
-  if (direction.includes("dl")) {
-    if (board[row - 1][col - 1] != "") {
-      if (team == "white" && !board[row - 1][col - 1].startsWith("w")) {
-        attacks.push([row - 1, col - 1]);
-        //console.log("attack found r-1 c-1");
-      } else if (team == "black" && board[row - 1][col - 1].startsWith("w")) {
-        attacks.push([row - 1, col + 1]);
-      }
-    }
-  }
-  //console.log('new possible attacks', attacks)
-  return attacks;
-};
 
 //refactor this mess
 export const getPossibleKnightMoves = (row: number, col: number, team: string, board: Array<string[]>): number[][] => {
@@ -273,7 +410,7 @@ export const getPossibleKnightMoves = (row: number, col: number, team: string, b
     possibleMoves.push([row + 2, col - 1])
   }
   //console.log(possibleMoves);
-  return possibleMoves;
+  return possibleMoves; 
 
 }
 
@@ -285,9 +422,9 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
   let otherTeamMoves: Array<number[]> = []
 
   console.log(team);
-  for(let i = 0; i < 7; i ++){
+  for(let i = 0; i < 8; i ++){
     //outer is going to keep track of the row
-    for(let k = 0; k < 7; k++){
+    for(let k = 0; k < 8; k++){
       //inner loop is going to iterate from left to right "col" 
       //this will probably be ugly but im unsure of any better way to do this at the moment
 
@@ -301,17 +438,19 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
           case "":
           break;
           case "pawn":
-            otherTeamMoves.concat(getPossiblePawnMoves(i, k, otherTeam, board));
+            otherTeamMoves = otherTeamMoves.concat(getPossiblePawnMoves(i, k, otherTeam, board));
             break;
           case "knight":
-            otherTeamMoves.concat(getPossibleKnightMoves(i, k, otherTeam, board));
+            otherTeamMoves = otherTeamMoves.concat(getPossibleKnightMoves(i, k, otherTeam, board));
             break;
           case "bishop":
-            otherTeamMoves.concat(getPossibleBishopMoves(i, k, otherTeam, board));
+            otherTeamMoves = otherTeamMoves.concat(getPossibleBishopMoves(i, k, otherTeam, board));
             break;
           case "rook":
-            otherTeamMoves.concat(getPossibleRookMoves(i, k, otherTeam, board));
-            break
+            otherTeamMoves = otherTeamMoves.concat(getPossibleRookMoves(i, k, otherTeam, board));
+            break;
+          case "queen":
+            break;
           default:
             break;
           
@@ -319,10 +458,37 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
     }
   }
 }
-  console.log("moves below me")
-  console.log(otherTeamMoves);
-  
 
+  //king moves
+
+  //fix this and remove the intsection of these two arrays
+  //fix the pawns so that you cannot move your king in place a pawn could attack
+  // queen moves
+  // turns
+  // game logic like checkmate and checks
+
+
+  if((board[row - 1][col] == "")){
+    let ele: number[] = [row - 1, col]
+    if(otherTeamMoves.includes(ele)){
+      console.log('woooooooooooooooooooooooooooooooooo')
+    }
+    possibleMoves.push([row - 1, col])
+  }
+  if((board[row - 1][col - 1] == "") && (!otherTeamMoves.includes([row - 1, col - 1]))){
+    possibleMoves.push([row - 1, col - 1])
+  }
+  if((board[row - 1][col + 1] == "") && (!otherTeamMoves.includes([row - 1, col + 1]))){
+    possibleMoves.push([row - 1, col + 1])
+  }
+  if((board[row][col + 1] == "") && (!otherTeamMoves.includes([row, col + 1]))){
+    possibleMoves.push([row, col + 1])
+  }
+  if((board[row][col - 1] == "") && (!otherTeamMoves.includes([row, col - 1]))){
+    possibleMoves.push([row, col - 1])
+  }
+  console.log('otherTeam moves', otherTeamMoves)
+  console.log('possiblemoves', possibleMoves)
   return possibleMoves;
 }
 

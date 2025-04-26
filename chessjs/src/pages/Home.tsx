@@ -17,7 +17,7 @@ const Home = () => {
     ["", "", "pawn", "wpawn", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "wking", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
+    ["", "wpawn", "", "", "wrook", "", "wpawn", ""],
     ["wpawn", "", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
     ["wrook","wbishop","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]);
