@@ -468,28 +468,21 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
   // game logic like checkmate and checks
 
 
-  if((board[row - 1][col] == "")){
-    let ele: number[] = [row - 1, col]
-    if(otherTeamMoves.includes(ele)){
-      console.log('woooooooooooooooooooooooooooooooooo')
-    }
-    possibleMoves.push([row - 1, col])
-  }
-  if((board[row - 1][col - 1] == "") && (!otherTeamMoves.includes([row - 1, col - 1]))){
-    possibleMoves.push([row - 1, col - 1])
-  }
-  if((board[row - 1][col + 1] == "") && (!otherTeamMoves.includes([row - 1, col + 1]))){
-    possibleMoves.push([row - 1, col + 1])
-  }
-  if((board[row][col + 1] == "") && (!otherTeamMoves.includes([row, col + 1]))){
-    possibleMoves.push([row, col + 1])
-  }
-  if((board[row][col - 1] == "") && (!otherTeamMoves.includes([row, col - 1]))){
-    possibleMoves.push([row, col - 1])
-  }
-  console.log('otherTeam moves', otherTeamMoves)
-  console.log('possiblemoves', possibleMoves)
-  return possibleMoves;
+  let kingMoves: Array<number[]> = [
+    [row - 1, col],
+    [row - 1, col - 1],
+    [row - 1, col + 1],
+    [row, col + 1],
+    [row, col - 1],
+    [row + 1, col],
+    [row + 1, col - 1],
+    [row + 1, col + 1]
+  ]
+
+  const validKingMoves = removeIntersection(kingMoves, otherTeamMoves);
+  
+  console.log('valid moves', validKingMoves);
+  return validKingMoves;
 }
 
 export const getPossibleQueenMoves = (row: number, col: number, team: string, board:Array<string[]>): Array<number[]> =>{
@@ -499,3 +492,22 @@ export const getPossibleQueenMoves = (row: number, col: number, team: string, bo
   //call all move getters except for knight and pawn then concat the entire list together to get all of the possible queen moves
   return possibleMoves
 }
+
+
+const removeIntersection = (kingMoves: Array<number[]>, otherTeamMoves: Array<number[]>): Array<number[]> => {
+//this function will find the intersection amongst these two arrays and remove it from kingMoves and return a possible moves array for the king
+
+return kingMoves.filter(kingMove => {
+  // For each kingMove, check if it exists in otherTeamMoves
+  return !otherTeamMoves.some(otherMove => {
+    // Compare each element of the inner arrays
+    return kingMove.length === otherMove.length && 
+           kingMove[0] === otherMove[0] && 
+           kingMove[1] === otherMove[1];
+  });
+});
+};
+
+// this works however pawns cannot capture straight on and since we are comparing against all possible moves the game thinks that 
+// it can be captured by a pawn head on, so might have to make a specific function to run on the pawns to find their attack angles
+//which shouldnt be to bad
