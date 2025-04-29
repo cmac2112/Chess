@@ -62,6 +62,22 @@ export const getPossiblePawnMoves = (
   }
   return possibleMoves;
 };
+
+const getPawnAttacksForKingMoveCalculation = (row: number, col: number, team: string, board: Array<string[]>): number[][] =>{
+
+
+  //just return the col + 1 row +- 1 for each pawn depending on the team here
+  //should individually call this for each pawn on the board so just return this
+  if(team == "black"){
+    
+    return [[row + 1, col + 1], [row + 1, col - 1]];
+  }
+  if(team == "white"){
+    return [[row - 1, col + 1], [row - 1, col - 1]];
+  }
+
+  return []
+}
 export const getPossibleBishopMoves = (
   row: number,
   col: number,
@@ -438,7 +454,7 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
           case "":
           break;
           case "pawn":
-            otherTeamMoves = otherTeamMoves.concat(getPossiblePawnMoves(i, k, otherTeam, board));
+            otherTeamMoves = otherTeamMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, otherTeam, board));
             break;
           case "knight":
             otherTeamMoves = otherTeamMoves.concat(getPossibleKnightMoves(i, k, otherTeam, board));
@@ -509,5 +525,6 @@ return kingMoves.filter(kingMove => {
 };
 
 // this works however pawns cannot capture straight on and since we are comparing against all possible moves the game thinks that 
-// it can be captured by a pawn head on, so might have to make a specific function to run on the pawns to find their attack angles
+// it can be captured by a pawn head on, so might have to make a specific function to run on the pawns to find their attack angles,
+// pawns are the only conditional attack angle out of all peices on the board
 //which shouldnt be to bad
