@@ -466,6 +466,7 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
             otherTeamMoves = otherTeamMoves.concat(getPossibleRookMoves(i, k, otherTeam, board));
             break;
           case "queen":
+            otherTeamMoves = otherTeamMoves.concat(getPossibleQueenMoves(i, k, otherTeam, board));
             break;
           default:
             break;
@@ -504,6 +505,9 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
 export const getPossibleQueenMoves = (row: number, col: number, team: string, board:Array<string[]>): Array<number[]> =>{
 
   let possibleMoves: Array<number[]> = [];
+
+  possibleMoves = possibleMoves.concat(getPossibleBishopMoves(row, col, team, board));
+  possibleMoves = possibleMoves.concat(getPossibleRookMoves(row, col, team, board));
 
   //call all move getters except for knight and pawn then concat the entire list together to get all of the possible queen moves
   return possibleMoves
