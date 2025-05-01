@@ -468,9 +468,38 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
           case "queen":
             otherTeamMoves = otherTeamMoves.concat(getPossibleQueenMoves(i, k, otherTeam, board));
             break;
+          case "king":
+            otherTeamMoves = otherTeamMoves.concat(getDefaultKingMoves(i, k));
+            break;
           default:
             break;
           
+      }
+    }else{
+      const otherTeam = "white";
+      switch(peice){
+        case "":
+          break;
+          case "wpawn":
+            otherTeamMoves = otherTeamMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, otherTeam, board));
+            break;
+            case "wknight":
+            otherTeamMoves = otherTeamMoves.concat(getPossibleKnightMoves(i, k, otherTeam, board));
+            break;
+          case "wbishop":
+            otherTeamMoves = otherTeamMoves.concat(getPossibleBishopMoves(i, k, otherTeam, board));
+            break;
+          case "wrook":
+            otherTeamMoves = otherTeamMoves.concat(getPossibleRookMoves(i, k, otherTeam, board));
+            break;
+          case "wqueen":
+            otherTeamMoves = otherTeamMoves.concat(getPossibleQueenMoves(i, k, otherTeam, board));
+            break;
+          case "wking":
+            otherTeamMoves = otherTeamMoves.concat(getDefaultKingMoves(i, k));
+            break;
+          default:
+            break;
       }
     }
   }
@@ -500,6 +529,20 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
   
   console.log('valid moves', validKingMoves);
   return validKingMoves;
+}
+
+const getDefaultKingMoves = (row: number, col: number): Array<number[]> => {
+  let kingMoves: Array<number[]> = [
+    [row - 1, col],
+    [row - 1, col - 1],
+    [row - 1, col + 1],
+    [row, col + 1],
+    [row, col - 1],
+    [row + 1, col],
+    [row + 1, col - 1],
+    [row + 1, col + 1]
+  ]
+  return kingMoves;
 }
 
 export const getPossibleQueenMoves = (row: number, col: number, team: string, board:Array<string[]>): Array<number[]> =>{
