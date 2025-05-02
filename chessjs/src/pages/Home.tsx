@@ -25,7 +25,7 @@ const Home = () => {
   //flip this flag for turn
   
   const [turn, setTurn] = useState<boolean>(false);
-  
+
   const handleOnClick = (
     peice: string,
     team: string,
@@ -79,9 +79,12 @@ const Home = () => {
 
       }
       setSelected({ peice, team, row, col });
+      //highlight the possible moves here
+      HighlightPossibleMoves(possibleMoves.current);
       return;
     } else if (selected.col === col && selected.row === row) { //handle selecting the same item again to deselect
       console.log('resetting')
+      ClearHighlights();
         setSelected({ peice: "", team: "", row: -1, col: -1 })
     }else if(selected.peice != "" && team != "" && selected.team != team) { //capture selection of a peice
       //handle capturing a peice
@@ -94,7 +97,6 @@ const Home = () => {
           ([r, c]) => r === row && c === col && team != selected.team
         );
       if(isValidMove){
-        console.log('move is valid')
       
       const newBoard = [...testboard];
       newBoard[row][col] = "";
@@ -103,6 +105,7 @@ const Home = () => {
       
       setTestBoard(newBoard);
       setSelected({peice: "", team: "", row: -1, col: -1})
+      ClearHighlights();
       }
       }
     
@@ -110,20 +113,19 @@ const Home = () => {
       //if something is selected this will run down here
       let check = false;      
         possibleMoves.current.forEach((e) => {
-          console.log('possible move', e[0], e[1])
           if(e[0] == row && e[1] == col){
             console.log('good move');
             check = true;
           }
           }
         )
-        //handle moving the peice to the new location, dont worry about peice rules at the moment
         if(check){
         const newBoard = [...testboard]; //create a copy of the board
         newBoard[row][col] = selected.peice; //copy the peice to the new board at the selected location
         newBoard[selected.row][selected.col] = ""; //remove the peice from the old location
         setTestBoard(newBoard); //update board with new board copy, rerender board and rerender the entire component
         setSelected({ peice: "", team: "", row: -1, col: -1 });
+        ClearHighlights();
         }else{
           console.log('bad move')
           return;
@@ -131,7 +133,27 @@ const Home = () => {
 
     }
   };
-  //evvery peice needs a unique id probably
+
+  const HighlightPossibleMoves = (moves: number[][]) => {
+    console.log(moves);
+    moves.forEach(([row, col]) => {
+      const cell = document.getElementById(`${row}, ${col}`);
+      console.log(`${row}-${col}`);
+      console.log(cell);
+      if (cell) {
+        cell.style.backgroundColor = 'red';
+      }
+    });
+  };
+
+  const ClearHighlights = () => {
+    const cells = document.querySelectorAll("div[class*='box']");
+    cells.forEach((cell) => {
+      (cell as HTMLElement).style.backgroundColor = '#f0f0f0';
+    });
+  };
+
+  //every peice needs a unique id probably
   //highlight a piece when clicked
 
   let board = [];
@@ -144,6 +166,8 @@ const Home = () => {
         const pieceType = piece;
         row.push(
           <Box
+          row={i}
+          col={j}
             key={`${i}-${j}`}
             peice={pieceType}
             team={team}
@@ -154,6 +178,8 @@ const Home = () => {
       } else {
         row.push(
           <Box
+          row={i}
+          col={j}
             key={`${i}-${j}`}
             peice=""
             team=""

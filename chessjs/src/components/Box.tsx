@@ -9,13 +9,16 @@ interface BoxProps {
     team: string;
     onClick: () => void;
     isSelected: boolean;
+    row: number;
+    col: number;
 }
 const Box: React.FC<BoxProps> = ({
     peice,
     team,
     onClick,
-    isSelected
-
+    isSelected,
+    row,
+    col
 }) => {
   const [imagePath, setImagePath] = React.useState<string>('');
 
@@ -43,7 +46,7 @@ const Box: React.FC<BoxProps> = ({
   }, [peice, team]);
 
   return (
-    <div className={`box ${isSelected ? 'highlight' : ''}`} onClick={() => { onClick(); }}>
+    <div className={`box ${isSelected ? 'highlight' : ''}`} id={`${row}, ${col}`} onClick={() => { onClick(); }}>
       {imagePath && (
       <img
         src={imagePath}
