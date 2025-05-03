@@ -11,14 +11,26 @@ const Home = () => {
   });
 
   const possibleMoves = useRef<number[][]>([]);
-  const [testboard, setTestBoard] = useState([
-    ["", "", "bishop", "", "king", "bishop", "knight", "rook"],
-    ["pawn", "", "pawn", "", "pawn", "pawn", "pawn", "pawn"],
-    ["", "", "pawn", "wpawn", "", "", "", ""],
+  const startingPositions: Array<string[][]> = [[
+    ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
+    ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "wking", "", "", "", ""],
-    ["", "wpawn", "", "", "wrook", "", "wpawn", ""],
-    ["wpawn", "", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
+    ["wrook","wbishop","wbishop","wqueen","wking","wbishop","wknight","wrook",],
+  ]]
+
+  //used as playing board, should rename this
+  const [testboard, setTestBoard] = useState([
+    ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
+    ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
     ["wrook","wbishop","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]);
 
@@ -26,6 +38,11 @@ const Home = () => {
   
   const [turn, setTurn] = useState<boolean>(false);
 
+  const handleReset = () =>{
+    //handle some sort of confirmation here
+    //then set playboard to the starting board
+    //setTestBoard(startingPositions);
+  }
   const handleOnClick = (
     peice: string,
     team: string,
