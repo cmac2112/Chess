@@ -11,7 +11,7 @@ const Home = () => {
   });
 
   const possibleMoves = useRef<number[][]>([]);
-  const startingPositions: Array<string[][]> = [[
+  const startingPositions: Array<string[]>  = [
     ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
     ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
     ["", "", "", "", "", "", "", ""],
@@ -20,10 +20,10 @@ const Home = () => {
     ["", "", "", "", "", "", "", ""],
     ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
     ["wrook","wbishop","wbishop","wqueen","wking","wbishop","wknight","wrook",],
-  ]]
+  ]
 
   //used as playing board, should rename this
-  const [testboard, setTestBoard] = useState([
+  const [testboard, setTestBoard] = useState<string[][]>([
     ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
     ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
     ["", "", "", "", "", "", "", ""],
@@ -37,11 +37,27 @@ const Home = () => {
   //flip this flag for turn
   
   const [turn, setTurn] = useState<boolean>(false);
-
-  const handleReset = () =>{
+  const [confirm, setConfirm] = useState<boolean>(false);
+  const ResetGame= () =>{
     //handle some sort of confirmation here
     //then set playboard to the starting board
     //setTestBoard(startingPositions);
+    if(!confirm){
+      let button = document.getElementById("reset")
+      if(button){
+        button.innerText = "Confirm"
+      }
+      setConfirm(true)
+    }else{
+      setTestBoard(startingPositions)
+      setConfirm(false)
+      setTurn(false)
+      let button = document.getElementById("reset")
+      if(button){
+      button.innerText = "Reset"
+      }
+    }
+    
   }
   const handleOnClick = (
     peice: string,
@@ -213,7 +229,12 @@ const Home = () => {
     );
   }
 
-  return <div className="board">{board}</div>;
+  return (
+    <div className="game">
+     <div className="board">{board}</div>
+     <button id="reset" onClick={() => ResetGame()}>Reset</button>
+</div>
+  );
 };
 
 export default Home;
