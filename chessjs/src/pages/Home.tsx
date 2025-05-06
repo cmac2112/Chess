@@ -36,6 +36,8 @@ const Home = () => {
 
   //flip this flag for turn
   
+  //false will be white turn
+  //true will be black turn
   const [turn, setTurn] = useState<boolean>(false);
   const [confirm, setConfirm] = useState<boolean>(false);
   const ResetGame= () =>{
@@ -70,8 +72,6 @@ const Home = () => {
    //if selected already exists here then that means we are trying to attack
     
     if (selected.peice == "" && selected.team == "") {
-      
-      console.log('selected', peice, team, row, col) //initial selection of a peice
       switch (peice){
         case "wpawn":
           possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
@@ -91,6 +91,7 @@ const Home = () => {
         case "wqueen":
           possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
           break;
+
         case "pawn":
           possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
           break;
@@ -110,6 +111,12 @@ const Home = () => {
           possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
           break;
 
+      }
+      if(!turn && !peice.startsWith("w")){
+        return
+      }
+      if(turn && peice.startsWith("w")){
+        return
       }
       setSelected({ peice, team, row, col });
       //highlight the possible moves here
@@ -139,6 +146,7 @@ const Home = () => {
       setTestBoard(newBoard);
       setSelected({peice: "", team: "", row: -1, col: -1})
       ClearHighlights();
+      setTurn(!turn);
       }
       }
     
@@ -159,6 +167,7 @@ const Home = () => {
         setTestBoard(newBoard); //update board with new board copy, rerender board and rerender the entire component
         setSelected({ peice: "", team: "", row: -1, col: -1 });
         ClearHighlights();
+        setTurn(!turn);
         }else{
           console.log('bad move')
           return;
@@ -233,6 +242,7 @@ const Home = () => {
     <div className="game">
      <div className="board">{board}</div>
      <button id="reset" onClick={() => ResetGame()}>Reset</button>
+     <p>Turn: {turn ? "Black" : "White"}</p>
 </div>
   );
 };
