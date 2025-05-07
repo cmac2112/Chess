@@ -433,8 +433,6 @@ export const getPossibleKnightMoves = (row: number, col: number, team: string, b
 //todo for next weekend, King moves, queen moves, turn system
 export const getPossibleKingMoves = (row: number, col: number, team: string, board:Array<string[]>):Array<number[]> =>{
 
-  let possibleMoves: Array<number[]> = []
-
   let otherTeamMoves: Array<number[]> = []
 
   console.log(team);
@@ -527,8 +525,15 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
 
   const validKingMoves = removeIntersection(kingMoves, otherTeamMoves);
   
-  console.log('valid moves', validKingMoves);
-  return validKingMoves;
+  const filteredKingMoves = validKingMoves.filter(([r, c]) => {
+    if (team === "white") {
+      return !board[r][c]?.startsWith("w");
+    }
+    return true;
+  });
+ 
+  console.log('valid moves', filteredKingMoves);
+  return filteredKingMoves;
 }
 
 const getDefaultKingMoves = (row: number, col: number): Array<number[]> => {
