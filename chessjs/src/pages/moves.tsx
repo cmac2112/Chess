@@ -526,10 +526,17 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
   const validKingMoves = removeIntersection(kingMoves, otherTeamMoves);
   
   const filteredKingMoves = validKingMoves.filter(([r, c]) => {
-    if (team === "white") {
-      return !board[r][c]?.startsWith("w");
+    // Check if the move is within bounds
+    const inBounds = r >= 0 && r <= 7 && c >= 0 && c <= 7;
+
+    if(!inBounds){
+      return false;
     }
-    return true;
+  
+    // Check if the destination square is valid for the "white" team
+    const isValidForWhite = team === "white" ? !board[r][c]?.startsWith("w") : true;
+  
+    return isValidForWhite;
   });
  
   console.log('valid moves', filteredKingMoves);
@@ -575,8 +582,3 @@ return kingMoves.filter(kingMove => {
   });
 });
 };
-
-// this works however pawns cannot capture straight on and since we are comparing against all possible moves the game thinks that 
-// it can be captured by a pawn head on, so might have to make a specific function to run on the pawns to find their attack angles,
-// pawns are the only conditional attack angle out of all peices on the board
-//which shouldnt be to bad

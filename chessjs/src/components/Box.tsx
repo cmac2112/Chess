@@ -1,6 +1,6 @@
 import React from 'react'
 import './Box.css'
-import {useState, useEffect} from 'react'
+import {useEffect} from 'react'
 //this will hold a box to hold the pieces, chess board is 8x8
 //need some sort of event handler to detect if this component is clicked as well, could just be a simple button
 

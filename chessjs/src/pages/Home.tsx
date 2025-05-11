@@ -11,6 +11,7 @@ const Home = () => {
   });
 
   const possibleMoves = useRef<number[][]>([]);
+  //const testMoves: number[][] = [];
   const startingPositions: Array<string[]>  = [
     ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
     ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
@@ -34,16 +35,10 @@ const Home = () => {
     ["wrook","wbishop","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]);
 
-  //flip this flag for turn
-  
-  //false will be white turn
-  //true will be black turn
   const [turn, setTurn] = useState<boolean>(false);
   const [confirm, setConfirm] = useState<boolean>(false);
+
   const ResetGame= () =>{
-    //handle some sort of confirmation here
-    //then set playboard to the starting board
-    //setTestBoard(startingPositions);
     if(!confirm){
       let button = document.getElementById("reset")
       if(button){
@@ -67,9 +62,6 @@ const Home = () => {
     row: number,
     col: number
   ) => {
-    // calculate possible moves like for pawn
-    // possible moves [x, y + 2 or 1] if white, [x, y - 2 or 1] if black calculate side steps etc and disable moving anywhere
-   //if selected already exists here then that means we are trying to attack
     
     if (selected.peice == "" && selected.team == "") {
       switch (peice){
@@ -91,7 +83,6 @@ const Home = () => {
         case "wqueen":
           possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
           break;
-
         case "pawn":
           possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
           break;
@@ -112,21 +103,25 @@ const Home = () => {
           break;
 
       }
+    
       if(!turn && !peice.startsWith("w")){
         return
       }
       if(turn && peice.startsWith("w")){
         return
       }
+
       setSelected({ peice, team, row, col });
+      console.log(selected)
       //highlight the possible moves here
+      console.log(possibleMoves.current);
+    
       HighlightPossibleMoves(possibleMoves.current);
       return;
-    } else if (selected.col === col && selected.row === row) { //handle selecting the same item again to deselect
-      console.log('resetting')
+    } else if (selected.col === col && selected.row === row) {
       ClearHighlights();
         setSelected({ peice: "", team: "", row: -1, col: -1 })
-    }else if(selected.peice != "" && team != "" && selected.team != team) { //capture selection of a peice
+    }else if(selected.peice != "" && team != "" && selected.team != team) { 
       //handle capturing a peice
       console.log('capture', peice, team, row, col)
       console.log('capturer', selected.peice, selected.team, selected.row, selected.col)
@@ -146,10 +141,9 @@ const Home = () => {
       setTestBoard(newBoard);
       setSelected({peice: "", team: "", row: -1, col: -1})
       ClearHighlights();
+      
       setTurn(!turn);
-      }
-      }
-    
+      } }
     }else{
       //if something is selected this will run down here
       let check = false;      
@@ -180,8 +174,6 @@ const Home = () => {
     console.log(moves);
     moves.forEach(([row, col]) => {
       const cell = document.getElementById(`${row}, ${col}`);
-      console.log(`${row}-${col}`);
-      console.log(cell);
       if (cell) {
         cell.style.backgroundColor = 'red';
       }
@@ -190,9 +182,11 @@ const Home = () => {
 
   const ClearHighlights = () => {
     const cells = document.querySelectorAll("div[class*='box']");
+    console.log(cells);
     cells.forEach((cell) => {
       (cell as HTMLElement).style.backgroundColor = '#f0f0f0';
     });
+    possibleMoves.current = [];
   };
 
   //every peice needs a unique id probably
