@@ -37,7 +37,16 @@ const Home = () => {
 
   const [turn, setTurn] = useState<boolean>(false);
   const [confirm, setConfirm] = useState<boolean>(false);
+  const [whiteCheck, setWhiteCheck] = useState<boolean>(false); // tracks the state of check for white team
+  const [blackCheck, setBlackCheck] = useState<boolean>(false); 
 
+
+  const CheckForCheck = (board: Array<string[]>, team: string) => {
+    //get the king position, get all moves for all other peices and check against it
+  }
+  const CheckForMate = (board: Array<string[]>, team: string) =>{
+    //if king cannot make any moves and is in check, end the game
+  }
   const ResetGame= () =>{
     if(!confirm){
       let button = document.getElementById("reset")
@@ -143,6 +152,8 @@ const Home = () => {
       ClearHighlights();
       
       setTurn(!turn);
+      CheckForCheck(newBoard, team);
+      CheckForMate(newBoard, team);
       } }
     }else{
       //if something is selected this will run down here
@@ -162,6 +173,8 @@ const Home = () => {
         setSelected({ peice: "", team: "", row: -1, col: -1 });
         ClearHighlights();
         setTurn(!turn);
+        //need to check for check or checkmate here
+
         }else{
           console.log('bad move')
           return;
