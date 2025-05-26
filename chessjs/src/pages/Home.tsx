@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "./moves";
+import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray } from "./Utilities";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -20,7 +21,7 @@ const Home = () => {
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
-    ["wrook","wbishop","wbishop","wqueen","wking","wbishop","wknight","wrook",],
+    ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]
 
   //used as playing board, should rename this
@@ -32,17 +33,59 @@ const Home = () => {
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
-    ["wrook","wbishop","wbishop","wqueen","wking","wbishop","wknight","wrook",],
+    ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]);
 
+  //false = white turn
+  //true = black turn
   const [turn, setTurn] = useState<boolean>(false);
+
+  //used to confirm board reset
   const [confirm, setConfirm] = useState<boolean>(false);
+
+  //track the checks of kings
   const [whiteCheck, setWhiteCheck] = useState<boolean>(false); // tracks the state of check for white team
   const [blackCheck, setBlackCheck] = useState<boolean>(false); 
 
 
-  const CheckForCheck = (board: Array<string[]>, team: string) => {
+  const CheckForCheck = (board: Array<string[]>, team: boolean) => {
     //get the king position, get all moves for all other peices and check against it
+    // do not allow for a move that wont get the king out of check
+    
+    //highlight king
+    //highlight checking peice
+    console.log(team);
+    let kingString;
+    if(team){
+      kingString = 'wking'
+    }else{
+      kingString = 'king'
+    }
+    console.log(kingString)
+
+
+    const kingPosition = FindAGivenPeice(board, kingString);
+    console.log(`king position for team: ${team ? "white" : "black"}, ${kingPosition}` )
+    //now that we have the other team kings position that is about to go, we need to check to see if any of the moves
+    // of the team that just went threaten the king on the next turn
+
+    //get all possible moves for the team that just went
+    let movesArray: Array<number[]> = GetAllPossibleMovesForTeam(board, (team ? "black" : "white"))
+
+    //check to see if king position of the other team is in the moves just gotten
+
+    if(kingPosition){
+      let check = IsMoveArrayInGivenArray(kingPosition, movesArray)
+      console.log(movesArray)
+      console.log('a peice is in check: ', check)
+      if(!team){
+        setBlackCheck(check)
+      }else{
+        setWhiteCheck(check)
+      }
+    }
+    movesArray = [];
+    console.log(movesArray)
   }
   const CheckForMate = (board: Array<string[]>, team: string) =>{
     //if king cannot make any moves and is in check, end the game
@@ -152,7 +195,7 @@ const Home = () => {
       ClearHighlights();
       
       setTurn(!turn);
-      CheckForCheck(newBoard, team);
+      CheckForCheck(newBoard, turn);
       CheckForMate(newBoard, team);
       } }
     }else{
@@ -174,6 +217,8 @@ const Home = () => {
         ClearHighlights();
         setTurn(!turn);
         //need to check for check or checkmate here
+        CheckForCheck(newBoard, turn)
+        
 
         }else{
           console.log('bad move')
@@ -182,23 +227,30 @@ const Home = () => {
 
     }
   };
+  // Store original background colors in a Map
+  const originalBgColors = useRef<Map<string, string>>(new Map());
 
   const HighlightPossibleMoves = (moves: number[][]) => {
-    console.log(moves);
     moves.forEach(([row, col]) => {
       const cell = document.getElementById(`${row}, ${col}`);
       if (cell) {
+        // Save original background color if not already saved
+        if (!originalBgColors.current.has(`${row},${col}`)) {
+          originalBgColors.current.set(`${row},${col}`, cell.style.backgroundColor);
+        }
         cell.style.backgroundColor = 'red';
       }
     });
   };
 
   const ClearHighlights = () => {
-    const cells = document.querySelectorAll("div[class*='box']");
-    console.log(cells);
-    cells.forEach((cell) => {
-      (cell as HTMLElement).style.backgroundColor = '#f0f0f0';
+    originalBgColors.current.forEach((color, key) => {
+      const cell = document.getElementById(key.replace(',', ', '));
+      if (cell) {
+        cell.style.backgroundColor = color;
+      }
     });
+    originalBgColors.current.clear();
     possibleMoves.current = [];
   };
 
@@ -206,9 +258,12 @@ const Home = () => {
   //highlight a piece when clicked
 
   let board = [];
+  let boxColor = false;
   for (let i = 0; i < 8; i++) {
     let row = [];
     for (let j = 0; j < 8; j++) {
+      //track board color as well
+      boxColor = !boxColor;
       const piece = testboard[i][j];
       if (piece) {
         const team = piece.startsWith("w") ? "white" : "black";
@@ -222,6 +277,7 @@ const Home = () => {
             team={team}
             onClick={() => handleOnClick(pieceType, team, i, j)}
             isSelected={selected.row === i && selected.col === j}
+            boxColor={boxColor}
           />
         );
       } else {
@@ -234,10 +290,12 @@ const Home = () => {
             team=""
             onClick={() => handleOnClick("", "", i, j)}
             isSelected={selected.row === i && selected.col === j}
+            boxColor={boxColor}
           />
         );
       }
     }
+    boxColor = !boxColor;
     board.push(
       <div key={i} className="row">
         {row}
@@ -247,10 +305,18 @@ const Home = () => {
 
   return (
     <div className="game">
-     <div className="board">{board}</div>
-     <button id="reset" onClick={() => ResetGame()}>Reset</button>
-     <p>Turn: {turn ? "Black" : "White"}</p>
-</div>
+      <div className="board-container">
+        <div className="board-wood">
+          <div className="board">{board}</div>
+          <div className="info-bar">
+            <button id="reset" className="reset-button" onClick={() => ResetGame()}>Reset</button>
+            {whiteCheck ? <p>White King In Check!</p> : <p></p>}
+            {blackCheck ? <p>Black King In Check!</p> : <p></p>}
+            <p className="turn-indicator">Turn: {turn ? "Black" : "White"}</p>
+          </div>
+        </div>
+     </div>
+    </div>
   );
 };
 

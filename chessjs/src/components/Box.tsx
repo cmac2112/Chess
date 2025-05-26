@@ -11,6 +11,7 @@ interface BoxProps {
     isSelected: boolean;
     row: number;
     col: number;
+    boxColor: boolean;
 }
 const Box: React.FC<BoxProps> = ({
     peice,
@@ -18,7 +19,8 @@ const Box: React.FC<BoxProps> = ({
     onClick,
     isSelected,
     row,
-    col
+    col,
+    boxColor
 }) => {
   const [imagePath, setImagePath] = React.useState<string>('');
 
@@ -46,7 +48,7 @@ const Box: React.FC<BoxProps> = ({
   }, [peice, team]);
 
   return (
-    <div className={`box ${isSelected ? 'highlight' : ''}`} id={`${row}, ${col}`} onClick={() => { onClick(); }}>
+    <div className={`${boxColor ? 'box' : 'box-filled'} ${isSelected ? 'highlight' : ''}`} id={`${row}, ${col}`} onClick={() => { onClick(); }}>
       {imagePath && (
       <img
         src={imagePath}

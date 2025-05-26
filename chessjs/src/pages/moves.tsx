@@ -1,3 +1,5 @@
+import { removeIntersection } from "./Utilities";
+
 export const getPossiblePawnMoves = (
   row: number,
   col: number,
@@ -63,7 +65,7 @@ export const getPossiblePawnMoves = (
   return possibleMoves;
 };
 
-const getPawnAttacksForKingMoveCalculation = (row: number, col: number, team: string, board: Array<string[]>): number[][] =>{
+export const getPawnAttacksForKingMoveCalculation = (row: number, col: number, team: string, board: Array<string[]>): number[][] =>{
 
 
   //just return the col + 1 row +- 1 for each pawn depending on the team here
@@ -397,7 +399,7 @@ export const getPossibleKnightMoves = (row: number, col: number, team: string, b
 
   let possibleMoves: Array<number[]> = [];
 
-  console.log(team);
+ 
   if((row - 2 >= 0 && col - 1 >= 0) && ((team == "white" ? !board[row - 2][col - 1].startsWith("w") : board[row - 2][col - 1].startsWith("w")) || board[row - 1][col - 2] == "")) {
     possibleMoves.push([row - 2, col - 1]);
   }
@@ -425,7 +427,7 @@ export const getPossibleKnightMoves = (row: number, col: number, team: string, b
   if((row + 2 <= 7 && col - 1 >= 0) && ((team == "white" ? !board[row + 2][col - 1].startsWith("w") : board[row + 2][col - 1].startsWith("w")) || board[row + 2][col - 1] == "")){
     possibleMoves.push([row + 2, col - 1])
   }
-  //console.log(possibleMoves);
+  
   return possibleMoves; 
 
 }
@@ -435,7 +437,7 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
 
   let otherTeamMoves: Array<number[]> = []
 
-  console.log(team);
+
   for(let i = 0; i < 8; i ++){
     //outer is going to keep track of the row
     for(let k = 0; k < 8; k++){
@@ -444,7 +446,7 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
 
       //we have the selected team
       let peice = board[i][k];
-      console.log(peice);
+     
       if(team == "white"){
         const otherTeam = "black";
         //console.log('entered switch')
@@ -530,16 +532,23 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
     const inBounds = r >= 0 && r <= 7 && c >= 0 && c <= 7;
 
     if(!inBounds){
+      console.log("not in bounds")
       return false;
     }
   
     // Check if the destination square is valid for the "white" team
-    const isValidForWhite = team === "white" ? !board[r][c]?.startsWith("w") : true;
-  
+    if(team == "white"){
+    const isValidForWhite = !board[r][c]?.startsWith("w");
     return isValidForWhite;
+    }else{
+      console.log(team)
+      const isValidForBlack = board[r][c] === "" || board[r][c]?.startsWith("w");
+      console.log(isValidForBlack)
+      return isValidForBlack;
+    }
   });
  
-  console.log('valid moves', filteredKingMoves);
+ // console.log('valid moves', filteredKingMoves);
   return filteredKingMoves;
 }
 
@@ -569,16 +578,4 @@ export const getPossibleQueenMoves = (row: number, col: number, team: string, bo
 }
 
 
-const removeIntersection = (kingMoves: Array<number[]>, otherTeamMoves: Array<number[]>): Array<number[]> => {
-//this function will find the intersection amongst these two arrays and remove it from kingMoves and return a possible moves array for the king
 
-return kingMoves.filter(kingMove => {
-  // For each kingMove, check if it exists in otherTeamMoves
-  return !otherTeamMoves.some(otherMove => {
-    // Compare each element of the inner arrays
-    return kingMove.length === otherMove.length && 
-           kingMove[0] === otherMove[0] && 
-           kingMove[1] === otherMove[1];
-  });
-});
-};
