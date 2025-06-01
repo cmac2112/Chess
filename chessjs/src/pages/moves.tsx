@@ -65,11 +65,13 @@ export const getPossiblePawnMoves = (
   return possibleMoves;
 };
 
-export const getPawnAttacksForKingMoveCalculation = (row: number, col: number, team: string, board: Array<string[]>): number[][] =>{
+export const getPawnAttacksForKingMoveCalculation = (row: number, col: number, team: string): number[][] =>{
 
 
   //just return the col + 1 row +- 1 for each pawn depending on the team here
   //should individually call this for each pawn on the board so just return this
+
+  // no out of bounds checking so come back to this if index errors happen
   if(team == "black"){
     
     return [[row + 1, col + 1], [row + 1, col - 1]];
@@ -270,7 +272,6 @@ export const getPossibleBishopMoves = (
 
   possibleMoves = possibleMoves.concat(diagLeftBlack);
   possibleMoves = possibleMoves.concat(diagRightBlack);
-  //console.log(possibleMoves)
 }
   return possibleMoves;
 
@@ -392,13 +393,11 @@ export const getPossibleRookMoves = (
   return possibleMoves;
 };
 
-//refactor and remove this
-
-//refactor this mess
 export const getPossibleKnightMoves = (row: number, col: number, team: string, board: Array<string[]>): number[][] => {
 
   let possibleMoves: Array<number[]> = [];
 
+  //investigate better way to do this, this hurts my eyes
  
   if((row - 2 >= 0 && col - 1 >= 0) && ((team == "white" ? !board[row - 2][col - 1].startsWith("w") : board[row - 2][col - 1].startsWith("w")) || board[row - 1][col - 2] == "")) {
     possibleMoves.push([row - 2, col - 1]);
@@ -432,7 +431,6 @@ export const getPossibleKnightMoves = (row: number, col: number, team: string, b
 
 }
 
-//todo for next weekend, King moves, queen moves, turn system
 export const getPossibleKingMoves = (row: number, col: number, team: string, board:Array<string[]>):Array<number[]> =>{
 
   let otherTeamMoves: Array<number[]> = []
@@ -454,7 +452,7 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
           case "":
           break;
           case "pawn":
-            otherTeamMoves = otherTeamMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, otherTeam, board));
+            otherTeamMoves = otherTeamMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, otherTeam));
             break;
           case "knight":
             otherTeamMoves = otherTeamMoves.concat(getPossibleKnightMoves(i, k, otherTeam, board));
@@ -481,7 +479,7 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
         case "":
           break;
           case "wpawn":
-            otherTeamMoves = otherTeamMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, otherTeam, board));
+            otherTeamMoves = otherTeamMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, otherTeam));
             break;
             case "wknight":
             otherTeamMoves = otherTeamMoves.concat(getPossibleKnightMoves(i, k, otherTeam, board));

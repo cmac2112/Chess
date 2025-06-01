@@ -90,7 +90,16 @@ const Home = () => {
   
   }
   const CheckForMate = (board: Array<string[]>, team: string) =>{
-    //if king cannot make any moves and is in check, end the game
+    //if next team king cannot make any moves and is in check, end the game
+    // also need to account for blocking of other peices
+
+    // so we need to run every single move and calculate the only possible moves someone can make,
+    // so maybe in check, only return a possibleMoves array that will either
+    // A. Move the king out of check
+    // B. Block the king from being in check
+    const whiteKingPosition = FindAGivenPeice(board, "wking");
+    const blackKingPosition = FindAGivenPeice(board, "king");
+
   }
   const ResetGame= () =>{
     if(!confirm){
