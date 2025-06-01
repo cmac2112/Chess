@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "./moves";
 import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray } from "./Utilities";
@@ -11,8 +11,9 @@ const Home = () => {
     col: -1,
   });
 
+  const [isFlashing, setIsFlashing] = useState<boolean>(false);
+
   const possibleMoves = useRef<number[][]>([]);
-  //const testMoves: number[][] = [];
   const startingPositions: Array<string[]>  = [
     ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
     ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
@@ -25,7 +26,7 @@ const Home = () => {
   ]
 
   //used as playing board, should rename this
-  const [testboard, setTestBoard] = useState<string[][]>([
+  const [playingBoard, setPlayingBoard] = useState<string[][]>([
     ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
     ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
     ["", "", "", "", "", "", "", ""],
@@ -48,44 +49,45 @@ const Home = () => {
   const [blackCheck, setBlackCheck] = useState<boolean>(false); 
 
 
-  const CheckForCheck = (board: Array<string[]>, team: boolean) => {
+  const CheckForCheck = (board: Array<string[]>) => {
     //get the king position, get all moves for all other peices and check against it
-    // do not allow for a move that wont get the king out of check
-    
-    //highlight king
-    //highlight checking peice
-    console.log(team);
-    let kingString;
-    if(team){
-      kingString = 'wking'
-    }else{
-      kingString = 'king'
-    }
-    console.log(kingString)
+    // do not allow for a move that wont get the king out of check TODO
+  
 
+    //lets get positions of both kings first
 
-    const kingPosition = FindAGivenPeice(board, kingString);
-    console.log(`king position for team: ${team ? "white" : "black"}, ${kingPosition}` )
-    //now that we have the other team kings position that is about to go, we need to check to see if any of the moves
-    // of the team that just went threaten the king on the next turn
-
-    //get all possible moves for the team that just went
-    let movesArray: Array<number[]> = GetAllPossibleMovesForTeam(board, (team ? "black" : "white"))
-
-    //check to see if king position of the other team is in the moves just gotten
-
-    if(kingPosition){
-      let check = IsMoveArrayInGivenArray(kingPosition, movesArray)
-      console.log(movesArray)
-      console.log('a peice is in check: ', check)
-      if(!team){
-        setBlackCheck(check)
-      }else{
-        setWhiteCheck(check)
+    const whiteKingPosition = FindAGivenPeice(board, "wking");
+    const blackKingPosition = FindAGivenPeice(board, "king");
+    const allWhiteMoves: Array<number[]> = GetAllPossibleMovesForTeam(board, "white");
+    const allBlackMoves: Array<number[]> = GetAllPossibleMovesForTeam(board, "black");
+    if(blackKingPosition){
+      let check = IsMoveArrayInGivenArray(blackKingPosition, allWhiteMoves); //check if the black king is in the white team moves array after a turn
+      setBlackCheck(check);
+      console.log('setting black as: ', check)
+      if(check == true){
+        HandleFlash();
       }
     }
-    movesArray = [];
-    console.log(movesArray)
+    if(whiteKingPosition){
+      let check = IsMoveArrayInGivenArray(whiteKingPosition, allBlackMoves);
+      setWhiteCheck(check);
+      console.log('setting white as: ', check)
+      if(check == true){
+        HandleFlash();
+      }
+    }
+
+
+    //also need to check if moving a certain peice will put the own players king in check and mark it an invalid move somehow
+    //could after every team move check all of the moves of the other team and if the move puts the king in check then do not allow it
+    // could calculate this for each possilbe move a peice could make but it might get cumbersome or slow possibly.
+
+    //So basically, we have a getPeice method to get the kings place, if the kings place exists in the all moves array for the other team
+    // for each move that a chess peice can make, lets iterate through all of its possible moves of that selected peice then calculate the moves of all other team peices,
+    
+
+    //get all possible moves for the team that just went
+  
   }
   const CheckForMate = (board: Array<string[]>, team: string) =>{
     //if king cannot make any moves and is in check, end the game
@@ -98,7 +100,7 @@ const Home = () => {
       }
       setConfirm(true)
     }else{
-      setTestBoard(startingPositions)
+      setPlayingBoard(startingPositions)
       setConfirm(false)
       setTurn(false)
       let button = document.getElementById("reset")
@@ -118,40 +120,40 @@ const Home = () => {
     if (selected.peice == "" && selected.team == "") {
       switch (peice){
         case "wpawn":
-          possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
+          possibleMoves.current = getPossiblePawnMoves(row, col, team, playingBoard);
           break;
         case "wrook":
-          possibleMoves.current = getPossibleRookMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleRookMoves(row, col, team, playingBoard);
           break;
         case "wbishop":
-          possibleMoves.current = getPossibleBishopMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleBishopMoves(row, col, team, playingBoard);
           break;
         case "wknight":
-          possibleMoves.current = getPossibleKnightMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleKnightMoves(row, col, team, playingBoard);
           break;
         case "wking":
-          possibleMoves.current = getPossibleKingMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleKingMoves(row, col, team, playingBoard);
           break;
         case "wqueen":
-          possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleQueenMoves(row, col, team, playingBoard);
           break;
         case "pawn":
-          possibleMoves.current = getPossiblePawnMoves(row, col, team, testboard);
+          possibleMoves.current = getPossiblePawnMoves(row, col, team, playingBoard);
           break;
         case "knight":
-          possibleMoves.current = getPossibleKnightMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleKnightMoves(row, col, team, playingBoard);
           break;
         case "rook":
-          possibleMoves.current = getPossibleRookMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleRookMoves(row, col, team, playingBoard);
           break;
         case "bishop":
-          possibleMoves.current = getPossibleBishopMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleBishopMoves(row, col, team, playingBoard);
           break;
         case "king":
-          possibleMoves.current = getPossibleKingMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleKingMoves(row, col, team, playingBoard);
           break;
         case "queen":
-          possibleMoves.current = getPossibleQueenMoves(row, col, team, testboard);
+          possibleMoves.current = getPossibleQueenMoves(row, col, team, playingBoard);
           break;
 
       }
@@ -185,17 +187,17 @@ const Home = () => {
         );
       if(isValidMove){
       
-      const newBoard = [...testboard];
+      const newBoard = [...playingBoard];
       newBoard[row][col] = "";
       newBoard[selected.row][selected.col] = ""
       newBoard[row][col] = selected.peice
       
-      setTestBoard(newBoard);
+      setPlayingBoard(newBoard);
       setSelected({peice: "", team: "", row: -1, col: -1})
       ClearHighlights();
       
       setTurn(!turn);
-      CheckForCheck(newBoard, turn);
+      CheckForCheck(newBoard);
       CheckForMate(newBoard, team);
       } }
     }else{
@@ -209,15 +211,15 @@ const Home = () => {
           }
         )
         if(check){
-        const newBoard = [...testboard]; //create a copy of the board
+        const newBoard = [...playingBoard]; //create a copy of the board
         newBoard[row][col] = selected.peice; //copy the peice to the new board at the selected location
         newBoard[selected.row][selected.col] = ""; //remove the peice from the old location
-        setTestBoard(newBoard); //update board with new board copy, rerender board and rerender the entire component
+        setPlayingBoard(newBoard); //update board with new board copy, rerender board and rerender the entire component
         setSelected({ peice: "", team: "", row: -1, col: -1 });
         ClearHighlights();
         setTurn(!turn);
         //need to check for check or checkmate here
-        CheckForCheck(newBoard, turn)
+        CheckForCheck(newBoard)
         
 
         }else{
@@ -264,7 +266,7 @@ const Home = () => {
     for (let j = 0; j < 8; j++) {
       //track board color as well
       boxColor = !boxColor;
-      const piece = testboard[i][j];
+      const piece = playingBoard[i][j];
       if (piece) {
         const team = piece.startsWith("w") ? "white" : "black";
         const pieceType = piece;
@@ -303,6 +305,15 @@ const Home = () => {
     );
   }
 
+
+  const HandleFlash = () =>{
+    setIsFlashing(true);
+    setTimeout(() => {
+      setIsFlashing(false);
+
+    }, 500)
+  }
+  
   return (
     <div className="game">
       <div className="board-container">
@@ -310,8 +321,10 @@ const Home = () => {
           <div className="board">{board}</div>
           <div className="info-bar">
             <button id="reset" className="reset-button" onClick={() => ResetGame()}>Reset</button>
-            {whiteCheck ? <p>White King In Check!</p> : <p></p>}
-            {blackCheck ? <p>Black King In Check!</p> : <p></p>}
+            <div className="check-signal">
+            {whiteCheck ? <p className={`check-warning ${isFlashing ? "flash" : ""}`}>White King In Check!</p> : <p></p>}
+            {blackCheck ? <p className={`check-warning ${isFlashing ? "flash" : ""}`}>Black King In Check!</p> : <p></p>}
+            </div>
             <p className="turn-indicator">Turn: {turn ? "Black" : "White"}</p>
           </div>
         </div>

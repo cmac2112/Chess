@@ -1,13 +1,11 @@
-import { useState } from 'react'
 import './App.css'
-import Home from './pages/home';
 import { HashRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
+import Home from './pages/Home';
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <Router>

@@ -1,14 +1,17 @@
 //file for holding useful utilities to do things for the game that have no other place
 import {getPawnAttacksForKingMoveCalculation, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleQueenMoves, getPossibleRookMoves } from "./moves";
 
+
+/// This method will be used to check if a position (array) on the board exists in the positions (array of arrays) passed in
+/// returns a boolean 
 export const IsMoveArrayInGivenArray = (position: number[], givenMoves: number[][]): boolean =>{
 return givenMoves.some(
         move => move.length === position.length && move[0] === position[0] && move[1] === position[1]
     );
 }
 
-export const FindAGivenPeice = (board: Array<string[]>, peice: string,) =>{
-    //finds a given peice in the board and then returns its postion as [r][c]
+//finds a given peice in the board and then returns its postion as [r][c], returns null if not found
+export const FindAGivenPeice = (board: Array<string[]>, peice: string,): number[] | null =>{
     for(let i = 0; i < board.length; i++){
         for(let k = 0; k < board[i].length; k++){
             if(board[i][k] === peice){
@@ -19,9 +22,9 @@ export const FindAGivenPeice = (board: Array<string[]>, peice: string,) =>{
     return null;
 }
 
-export const removeIntersection = (kingMoves: Array<number[]>, otherTeamMoves: Array<number[]>): Array<number[]> => {
-//this function will find the intersection amongst these two arrays and remove it from kingMoves and return a possible moves array for the king
 
+/// This function will find the intersection amongst these two arrays and remove it from kingMoves and return a possible moves array for the king
+export const removeIntersection = (kingMoves: Array<number[]>, otherTeamMoves: Array<number[]>): Array<number[]> => {
 return kingMoves.filter(kingMove => {
   // For each kingMove, check if it exists in otherTeamMoves
   return !otherTeamMoves.some(otherMove => {
@@ -33,6 +36,8 @@ return kingMoves.filter(kingMove => {
 });
 };
 
+
+/// This method will give all of the possible moves of a team based on the position of the board given
 export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string): number[][] => {
     let possibleMoves: number[][] = []
 

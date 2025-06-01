@@ -45,6 +45,7 @@ fix board in place do not allow resize TODO
 .info-bar{
   display: flex;
   justify-content: space-between;
+  padding: 0.5rem;
 }
 .turn-indicator{
   font-family: Arial, Helvetica, sans-serif;
@@ -53,4 +54,24 @@ fix board in place do not allow resize TODO
 }
 .reset-button{
   background-color: #ff0000;
+}
+
+.check-signal{
+  background-color:indianred;
+  color: white;
+}
+
+.check-warning{
+  padding-inline: 1rem;
+}
+
+.flash{
+  animation: flash-animation 0.5s ease-in-out;
+}
+@keyframes flash-animation{
+  0% { background-color: transparent;}
+  25% { background-color: yellow;} 
+  50% { background-color: transparent}
+  75% { background-color: yellow;} 
+  100% { background-color: transparent;}
 }

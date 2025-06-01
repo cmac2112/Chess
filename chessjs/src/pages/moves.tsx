@@ -505,15 +505,6 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
   }
 }
 
-  //king moves
-
-  //fix this and remove the intsection of these two arrays
-  //fix the pawns so that you cannot move your king in place a pawn could attack
-  // queen moves
-  // turns
-  // game logic like checkmate and checks
-
-
   let kingMoves: Array<number[]> = [
     [row - 1, col],
     [row - 1, col - 1],
