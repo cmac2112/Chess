@@ -530,9 +530,7 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
     const isValidForWhite = !board[r][c]?.startsWith("w");
     return isValidForWhite;
     }else{
-      console.log(team)
       const isValidForBlack = board[r][c] === "" || board[r][c]?.startsWith("w");
-      console.log(isValidForBlack)
       return isValidForBlack;
     }
   });

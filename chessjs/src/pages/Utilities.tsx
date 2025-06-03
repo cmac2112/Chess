@@ -55,7 +55,7 @@ export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string)
               case "":
               break;
               case "pawn":
-                possibleMoves = possibleMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, team, board));
+                possibleMoves = possibleMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, team));
                 break;
               case "knight":
                 possibleMoves = possibleMoves.concat(getPossibleKnightMoves(i, k, team, board));
@@ -83,7 +83,7 @@ export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string)
             case "":
               break;
               case "wpawn":
-                possibleMoves = possibleMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, team, board));
+                possibleMoves = possibleMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, team));
                 break;
                 case "wknight":
                 possibleMoves = possibleMoves.concat(getPossibleKnightMoves(i, k, team, board));
@@ -112,5 +112,11 @@ export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string)
 
 }
 
+
+// this method will return the peice at a given position passed to it
+// probably could have just done this in the method itself but this makes things more readable
+export const PeiceAtGivenPosition = (board: Array<string[]>, peicePositionRow: number, peicePositionCol: number): string =>{
+  return board[peicePositionRow][peicePositionCol];
+}
 
 

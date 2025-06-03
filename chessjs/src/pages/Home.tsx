@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "./moves";
-import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray } from "./Utilities";
+import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition } from "./Utilities";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -45,9 +45,24 @@ const Home = () => {
   const [confirm, setConfirm] = useState<boolean>(false);
 
   //track the checks of kings
-  const [whiteCheck, setWhiteCheck] = useState<boolean>(false); // tracks the state of check for white team
-  const [blackCheck, setBlackCheck] = useState<boolean>(false); 
+  const whiteCheck = useRef<boolean>(false); // tracks the state of check for white team
+  const blackCheck = useRef<boolean>(false); 
 
+  const CanAPeiceBlockACheck = (board: Array<string[]>, team: string, targetingPeicePosition: number[]):boolean => {
+
+    // lets valiate if a move will block the check state of the king in play, if a move does not get the king out of check, do not allow the move to happen
+
+    //implement a calculation here to determine if any possible moves could block the king from being in check, what the f would that look like? 
+      // maybe take the moves of the item putting the king in check, find the direction of its moves that is putting it in check, then check to see if any of your peices
+      // can move into those array of squares to block?
+
+
+      //first get the type of peice at the given position
+
+      // probably better to just go through every single peice and determine which one has the king in check
+      const targetingPeice = PeiceAtGivenPosition(board, targetingPeicePosition[0], targetingPeicePosition[1])
+    return true;
+  }
 
   const CheckForCheck = (board: Array<string[]>) => {
     //get the king position, get all moves for all other peices and check against it
@@ -62,7 +77,7 @@ const Home = () => {
     const allBlackMoves: Array<number[]> = GetAllPossibleMovesForTeam(board, "black");
     if(blackKingPosition){
       let check = IsMoveArrayInGivenArray(blackKingPosition, allWhiteMoves); //check if the black king is in the white team moves array after a turn
-      setBlackCheck(check);
+      blackCheck.current = check;
       console.log('setting black as: ', check)
       if(check == true){
         HandleFlash();
@@ -70,7 +85,7 @@ const Home = () => {
     }
     if(whiteKingPosition){
       let check = IsMoveArrayInGivenArray(whiteKingPosition, allBlackMoves);
-      setWhiteCheck(check);
+      whiteCheck.current = check;
       console.log('setting white as: ', check)
       if(check == true){
         HandleFlash();
@@ -89,7 +104,7 @@ const Home = () => {
     //get all possible moves for the team that just went
   
   }
-  const CheckForMate = (board: Array<string[]>, team: string) =>{
+  const CheckForMate = (board: Array<string[]>) =>{
     //if next team king cannot make any moves and is in check, end the game
     // also need to account for blocking of other peices
 
@@ -97,8 +112,33 @@ const Home = () => {
     // so maybe in check, only return a possibleMoves array that will either
     // A. Move the king out of check
     // B. Block the king from being in check
+
+    console.log('checking for checkmate')
     const whiteKingPosition = FindAGivenPeice(board, "wking");
     const blackKingPosition = FindAGivenPeice(board, "king");
+
+    const allWhiteMoves = GetAllPossibleMovesForTeam(board, "white");
+    const allBlackMoves = GetAllPossibleMovesForTeam(board, "black");
+
+    if(blackCheck.current && blackKingPosition){
+      const blackKingMoves = getPossibleKingMoves(blackKingPosition[0], blackKingPosition[1], "black", board)
+      console.log('black king moves in check', blackKingMoves)
+      // if blackKing moves comes back empty, and no other valid moves can be calculated to ensure no check, and black is in check, end the game
+
+      //implement a calculation here to determine if any possible moves could block the king from being in check, what the f would that look like? 
+      // maybe take the moves of the item putting the king in check, find the direction of its moves that is putting it in check, then check to see if any of your peices
+      // can move into those array of squares to block?
+
+      const canBlock = CanAPeiceBlockACheck(board, "black");
+      if(!canBlock){
+        //end game
+        console.log('game over add more stuff here later')
+      }
+    }
+    if(whiteCheck.current && whiteKingPosition){
+      const whiteKingMoves = getPossibleKingMoves(whiteKingPosition[0], whiteKingPosition[1], "white", board);
+      console.log('white king moves in check', whiteKingMoves)
+    }
 
   }
   const ResetGame= () =>{
@@ -207,7 +247,7 @@ const Home = () => {
       
       setTurn(!turn);
       CheckForCheck(newBoard);
-      CheckForMate(newBoard, team);
+      CheckForMate(newBoard);
       } }
     }else{
       //if something is selected this will run down here
@@ -229,6 +269,7 @@ const Home = () => {
         setTurn(!turn);
         //need to check for check or checkmate here
         CheckForCheck(newBoard)
+        CheckForMate(newBoard)
         
 
         }else{
@@ -331,8 +372,8 @@ const Home = () => {
           <div className="info-bar">
             <button id="reset" className="reset-button" onClick={() => ResetGame()}>Reset</button>
             <div className="check-signal">
-            {whiteCheck ? <p className={`check-warning ${isFlashing ? "flash" : ""}`}>White King In Check!</p> : <p></p>}
-            {blackCheck ? <p className={`check-warning ${isFlashing ? "flash" : ""}`}>Black King In Check!</p> : <p></p>}
+            {whiteCheck.current ? <p className={`check-warning ${isFlashing ? "flash" : ""}`}>White King In Check!</p> : <p></p>}
+            {blackCheck.current ? <p className={`check-warning ${isFlashing ? "flash" : ""}`}>Black King In Check!</p> : <p></p>}
             </div>
             <p className="turn-indicator">Turn: {turn ? "Black" : "White"}</p>
           </div>
