@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "./moves";
-import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition } from "./Utilities";
+import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, DetermineTargetingPeiceCausingCheck } from "./Utilities";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -129,11 +129,13 @@ const Home = () => {
       // maybe take the moves of the item putting the king in check, find the direction of its moves that is putting it in check, then check to see if any of your peices
       // can move into those array of squares to block?
 
-      const canBlock = CanAPeiceBlockACheck(board, "black");
+      const targetingPeice = DetermineTargetingPeiceCausingCheck(board, "black", [blackKingPosition[0], blackKingPosition[1]])
+      /*const canBlock = CanAPeiceBlockACheck(board, "black", targetingPeice);
       if(!canBlock){
         //end game
         console.log('game over add more stuff here later')
       }
+        */
     }
     if(whiteCheck.current && whiteKingPosition){
       const whiteKingMoves = getPossibleKingMoves(whiteKingPosition[0], whiteKingPosition[1], "white", board);
