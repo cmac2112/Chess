@@ -162,4 +162,93 @@ export const PeiceAtGivenPosition = (board: Array<string[]>, peicePositionRow: n
   return board[peicePositionRow][peicePositionCol];
 }
 
+//returns just the move array for a given peice at a position, will be used in the check and checkmate blocking funtionality
+export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, peicePositionRow: number, peicePositionCol: number, team: string): number[][] => {
+
+  let moves: number[][] = [];
+
+  let peice = board[peicePositionRow][peicePositionCol]
+  if(team == "black"){
+          switch(peice){
+              case "":
+              break;
+              case "pawn":
+                moves = getPawnAttacksForKingMoveCalculation(peicePositionRow, peicePositionCol, team);
+                break;
+              case "knight":
+                moves = moves.concat(getPossibleKnightMoves(peicePositionRow, peicePositionCol, team, board));
+                break;
+              case "bishop":
+                moves = moves.concat(getPossibleBishopMoves(peicePositionRow, peicePositionCol, team, board));
+                break;
+              case "rook":
+                moves = moves.concat(getPossibleRookMoves(peicePositionRow, peicePositionCol, team, board));
+                break;
+              case "queen":
+                moves = moves.concat(getPossibleQueenMoves(peicePositionRow, peicePositionCol, team, board));
+                break;
+              /*case "king":
+                otherTeamMoves = otherTeamMoves.concat(getDefaultKingMoves(peicePositionRow, peicePositionCol));
+                break;
+                */
+              default:
+                break;
+              
+          }
+        }else{
+
+          switch(peice){
+            case "":
+              break;
+              case "wpawn":
+                moves = getPawnAttacksForKingMoveCalculation(peicePositionRow, peicePositionCol, team);
+                break;
+                case "wknight":
+                moves = getPossibleKnightMoves(peicePositionRow, peicePositionCol, team, board);
+                break;
+              case "wbishop":
+                moves = getPossibleBishopMoves(peicePositionRow, peicePositionCol, team, board);
+                break;
+              case "wrook":
+                moves = getPossibleRookMoves(peicePositionRow, peicePositionCol, team, board);
+                break;
+              case "wqueen":
+                moves = getPossibleQueenMoves(peicePositionRow, peicePositionCol, team, board);
+                break;
+              /*case "wking":
+                otherTeamMoves = otherTeamMoves.concat(getDefaultKingMoves(peicePositionRow, peicePositionCol));
+                break;
+                */
+              default:
+                break;
+          }
+        }
+      return moves;
+}
+
+export const ValidMoveCheckForCheck = (board: Array<string[]>, targetingTeam: string):boolean => {
+
+  let result:boolean = false;
+
+  if(targetingTeam == "black"){
+    const whiteKingPosition = FindAGivenPeice(board, "wking");
+    const blackTeamMovesNextTurn = GetAllPossibleMovesForTeam(board, "black");
+    if(whiteKingPosition != null){
+    result = IsMoveArrayInGivenArray(whiteKingPosition, blackTeamMovesNextTurn);
+    }else{
+      console.error("white king does not exist, how?")
+    }
+  }
+  if(targetingTeam == "white"){
+    const blackKingPosition = FindAGivenPeice(board, "king");
+    const whiteTeamMovesNextTurn = GetAllPossibleMovesForTeam(board, "white");
+    if(blackKingPosition != null){
+      result = IsMoveArrayInGivenArray(blackKingPosition, whiteTeamMovesNextTurn);
+    }else{
+      console.error("black king does not exist, how?")
+    }
+  }
+
+  return result;
+}
 

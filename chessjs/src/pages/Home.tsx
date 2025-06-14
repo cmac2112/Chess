@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "./moves";
-import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, DetermineTargetingPeiceCausingCheck } from "./Utilities";
+import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, DetermineTargetingPeiceCausingCheck, ValidMoveCheckForCheck } from "./Utilities";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -25,6 +25,8 @@ const Home = () => {
     ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]
 
+  
+
   //used as playing board, should rename this
   const [playingBoard, setPlayingBoard] = useState<string[][]>([
     ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
@@ -45,36 +47,28 @@ const Home = () => {
   const [confirm, setConfirm] = useState<boolean>(false);
 
   //track the checks of kings
-  const whiteCheck = useRef<boolean>(false); // tracks the state of check for white team
+  const whiteCheck = useRef<boolean>(false);
   const blackCheck = useRef<boolean>(false); 
 
-  const CanAPeiceBlockACheck = (board: Array<string[]>, team: string, targetingPeicePosition: number[]):boolean => {
-
-    // lets valiate if a move will block the check state of the king in play, if a move does not get the king out of check, do not allow the move to happen
-
-    //implement a calculation here to determine if any possible moves could block the king from being in check, what the f would that look like? 
-      // maybe take the moves of the item putting the king in check, find the direction of its moves that is putting it in check, then check to see if any of your peices
-      // can move into those array of squares to block?
-
-
-      //first get the type of peice at the given position
-
-      // probably better to just go through every single peice and determine which one has the king in check
-      const targetingPeice = PeiceAtGivenPosition(board, targetingPeicePosition[0], targetingPeicePosition[1])
-    return true;
+  const HandleTurnChange = (newBoard: Array<string[]>) =>{
+    console.log("handling turn change")
+        setPlayingBoard(newBoard); //update board with new board copy, rerender board and rerender the entire component
+        setSelected({ peice: "", team: "", row: -1, col: -1 });
+        ClearHighlights();
+        setTurn(!turn);
+        TurnEndCheckForCheck(newBoard)
+        CheckForMate(newBoard)
+        return;
   }
-
-  const CheckForCheck = (board: Array<string[]>) => {
-    //get the king position, get all moves for all other peices and check against it
-    // do not allow for a move that wont get the king out of check TODO
-  
-
-    //lets get positions of both kings first
-
+  // Checks for initial check on the board
+  const TurnEndCheckForCheck = (board: Array<string[]>) => {
     const whiteKingPosition = FindAGivenPeice(board, "wking");
     const blackKingPosition = FindAGivenPeice(board, "king");
+
     const allWhiteMoves: Array<number[]> = GetAllPossibleMovesForTeam(board, "white");
     const allBlackMoves: Array<number[]> = GetAllPossibleMovesForTeam(board, "black");
+
+
     if(blackKingPosition){
       let check = IsMoveArrayInGivenArray(blackKingPosition, allWhiteMoves); //check if the black king is in the white team moves array after a turn
       blackCheck.current = check;
@@ -90,19 +84,7 @@ const Home = () => {
       if(check == true){
         HandleFlash();
       }
-    }
-
-
-    //also need to check if moving a certain peice will put the own players king in check and mark it an invalid move somehow
-    //could after every team move check all of the moves of the other team and if the move puts the king in check then do not allow it
-    // could calculate this for each possilbe move a peice could make but it might get cumbersome or slow possibly.
-
-    //So basically, we have a getPeice method to get the kings place, if the kings place exists in the all moves array for the other team
-    // for each move that a chess peice can make, lets iterate through all of its possible moves of that selected peice then calculate the moves of all other team peices,
-    
-
-    //get all possible moves for the team that just went
-  
+    } 
   }
   const CheckForMate = (board: Array<string[]>) =>{
     //if next team king cannot make any moves and is in check, end the game
@@ -217,19 +199,17 @@ const Home = () => {
       }
 
       setSelected({ peice, team, row, col });
-      console.log(selected)
-      //highlight the possible moves here
-      console.log(possibleMoves.current);
-    
       HighlightPossibleMoves(possibleMoves.current);
+
       return;
     } else if (selected.col === col && selected.row === row) {
+
       ClearHighlights();
-        setSelected({ peice: "", team: "", row: -1, col: -1 })
+      setSelected({ peice: "", team: "", row: -1, col: -1 })
+      possibleMoves.current = [];
+      return;
+
     }else if(selected.peice != "" && team != "" && selected.team != team) { 
-      //handle capturing a peice
-      console.log('capture', peice, team, row, col)
-      console.log('capturer', selected.peice, selected.team, selected.row, selected.col)
       
       //check to see if the capture move is valid
       if (possibleMoves.current) {
@@ -238,18 +218,42 @@ const Home = () => {
         );
       if(isValidMove){
       
-      const newBoard = [...playingBoard];
+      const newBoard = playingBoard.map(row => [...row]);
       newBoard[row][col] = "";
       newBoard[selected.row][selected.col] = ""
       newBoard[row][col] = selected.peice
+
+
+      //could in the future possibly refactor this repeated code down into its own module
+      if(!turn && whiteCheck.current){
+          //!turn means it is still white teams turn, so lets check to see if the move they just did will block the check for their king
+          console.log("checking to see if white king in check after move")
+          let result = ValidMoveCheckForCheck(newBoard, "black");
+          console.log('simulating white result:', result);
+          if(result){
+            console.log("white king will still be in check after move: resetting")
+            setPlayingBoard(playingBoard)
+            setSelected({ peice: "", team: "", row: -1, col: -1 })
+            ClearHighlights();
+            HandleFlash();
+            return;
+          }
+        }
+        if(turn && blackCheck.current){
+          console.log("checking to see if black king in check after move")
+          let result = ValidMoveCheckForCheck(newBoard, "white");
+          console.log('simulating black result:', result);
+          if(result){
+            console.log("black king will still be in check after move: resetting")
+            setPlayingBoard(playingBoard)
+            setSelected({ peice: "", team: "", row: -1, col: -1 })
+            ClearHighlights();
+            HandleFlash();
+            return;
+          }
+        }
       
-      setPlayingBoard(newBoard);
-      setSelected({peice: "", team: "", row: -1, col: -1})
-      ClearHighlights();
-      
-      setTurn(!turn);
-      CheckForCheck(newBoard);
-      CheckForMate(newBoard);
+      HandleTurnChange(newBoard);
       } }
     }else{
       //if something is selected this will run down here
@@ -262,16 +266,41 @@ const Home = () => {
           }
         )
         if(check){
-        const newBoard = [...playingBoard]; //create a copy of the board
+        const newBoard = playingBoard.map(row => [...row]); //create a copy of the board
         newBoard[row][col] = selected.peice; //copy the peice to the new board at the selected location
         newBoard[selected.row][selected.col] = ""; //remove the peice from the old location
-        setPlayingBoard(newBoard); //update board with new board copy, rerender board and rerender the entire component
-        setSelected({ peice: "", team: "", row: -1, col: -1 });
-        ClearHighlights();
-        setTurn(!turn);
-        //need to check for check or checkmate here
-        CheckForCheck(newBoard)
-        CheckForMate(newBoard)
+
+        //now check the newboard to see iff a king is in check for the team and if it blocks the check for them, if it does not we do not update the board or flip the turn we just reset
+        
+        if(!turn && whiteCheck.current){
+          //!turn means it is still white teams turn, so lets check to see if the move they just did will block the check for their king
+          console.log("checking to see if white king in check after move")
+          let result = ValidMoveCheckForCheck(newBoard, "black");
+          console.log('simulating white result:', result);
+          if(result){
+            console.log("white king will still be in check after move: resetting")
+            setPlayingBoard(playingBoard)
+            setSelected({ peice: "", team: "", row: -1, col: -1 })
+            ClearHighlights();
+            HandleFlash();
+            return;
+          }
+        }
+        if(turn && blackCheck.current){
+          console.log("checking to see if black king in check after move")
+          let result = ValidMoveCheckForCheck(newBoard, "white");
+          console.log('simulating black result:', result);
+          if(result){
+            console.log("black king will still be in check after move: resetting")
+            setPlayingBoard(playingBoard)
+            setSelected({ peice: "", team: "", row: -1, col: -1 })
+            ClearHighlights();
+            HandleFlash();
+            return;
+          }
+        }
+
+        HandleTurnChange(newBoard);
         
 
         }else{
