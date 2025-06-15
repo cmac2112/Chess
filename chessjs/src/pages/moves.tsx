@@ -12,16 +12,13 @@ export const getPossiblePawnMoves = (
 
   //pawn promotions later here
 
+  //wont worry about enpessants for now because i dont even know what they are
 
   let possibleMoves: Array<number[]> = [];
   
   switch (team) {
     case "white":
       let attacks: Array<number[]> = []
-
-      //check for attacks first
-      //wont worry about enpessants for now because i dont even know what they are
-      //add a check for out of bounds selections
       
       if ((row - 1 >= 0 && col + 1 <= 7) && (board[row - 1][col + 1] != "") && (!board[row - 1][col + 1].startsWith("w"))) {
             attacks.push([row - 1, col + 1]);
@@ -535,7 +532,6 @@ export const getPossibleKingMoves = (row: number, col: number, team: string, boa
     }
   });
  
- // console.log('valid moves', filteredKingMoves);
   return filteredKingMoves;
 }
 
@@ -560,7 +556,6 @@ export const getPossibleQueenMoves = (row: number, col: number, team: string, bo
   possibleMoves = possibleMoves.concat(getPossibleBishopMoves(row, col, team, board));
   possibleMoves = possibleMoves.concat(getPossibleRookMoves(row, col, team, board));
 
-  //call all move getters except for knight and pawn then concat the entire list together to get all of the possible queen moves
   return possibleMoves
 }
 

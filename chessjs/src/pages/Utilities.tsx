@@ -1,22 +1,6 @@
 //file for holding useful utilities to do things for the game that have no other place
 import {getPawnAttacksForKingMoveCalculation, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleQueenMoves, getPossibleRookMoves } from "./moves";
 
-export const DetermineTargetingPeiceCausingCheck = (board: Array<string[]>, team: string, targetedKingPosition: number[]) =>{
-
-  //will return the position of the targing peice, then use find a given peice to determine the type
-  let targetingPeice: string = "";
-  let targetingPeicePosition: number[] = [];
-
-  let pawnMovesCheck = GetAllPossiblePawnMovesForTeam(board, team);
-
-  //is king position in pawnMoveCheck?
-
-  //if yes which pawn?
-
-  //calculate valid moves, maybe put them in a state variable or something idk
-
-
-}
 
 /// This method will be used to check if a position (array) on the board exists in the positions (array of arrays) passed in
 /// returns a boolean 

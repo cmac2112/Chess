@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "./moves";
-import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, DetermineTargetingPeiceCausingCheck, ValidMoveCheckForCheck } from "./Utilities";
+import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, ValidMoveCheckForCheck } from "./Utilities";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -87,14 +87,6 @@ const Home = () => {
     } 
   }
   const CheckForMate = (board: Array<string[]>) =>{
-    //if next team king cannot make any moves and is in check, end the game
-    // also need to account for blocking of other peices
-
-    // so we need to run every single move and calculate the only possible moves someone can make,
-    // so maybe in check, only return a possibleMoves array that will either
-    // A. Move the king out of check
-    // B. Block the king from being in check
-
     console.log('checking for checkmate')
     const whiteKingPosition = FindAGivenPeice(board, "wking");
     const blackKingPosition = FindAGivenPeice(board, "king");
@@ -105,19 +97,17 @@ const Home = () => {
     if(blackCheck.current && blackKingPosition){
       const blackKingMoves = getPossibleKingMoves(blackKingPosition[0], blackKingPosition[1], "black", board)
       console.log('black king moves in check', blackKingMoves)
-      // if blackKing moves comes back empty, and no other valid moves can be calculated to ensure no check, and black is in check, end the game
+      
+      //this is actually simple one you think about it
+      // if the king is in check, checking if the king itself can move to get out of check or checkmate is easy
+      // how do i determine if other peices can block the king from being mated, the mechanism is in place though with the simulated board
+      // how do i determine to end the game or not?
 
-      //implement a calculation here to determine if any possible moves could block the king from being in check, what the f would that look like? 
-      // maybe take the moves of the item putting the king in check, find the direction of its moves that is putting it in check, then check to see if any of your peices
-      // can move into those array of squares to block?
+      /*I have the utilities to do this, might just have to brute force it by iterating through each peice on the board,
+      iterating through all of their possible moves for each peice, then ruinning ValidMoveCheckForCheck, if no blocker can be found
+      then end the game 
+      */
 
-      const targetingPeice = DetermineTargetingPeiceCausingCheck(board, "black", [blackKingPosition[0], blackKingPosition[1]])
-      /*const canBlock = CanAPeiceBlockACheck(board, "black", targetingPeice);
-      if(!canBlock){
-        //end game
-        console.log('game over add more stuff here later')
-      }
-        */
     }
     if(whiteCheck.current && whiteKingPosition){
       const whiteKingMoves = getPossibleKingMoves(whiteKingPosition[0], whiteKingPosition[1], "white", board);
