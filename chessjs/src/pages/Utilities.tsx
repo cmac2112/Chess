@@ -2,6 +2,23 @@
 import {getPawnAttacksForKingMoveCalculation, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleQueenMoves, getPossibleRookMoves } from "./moves";
 
 
+export const GetAllPeicesForTeam = (board: Array<string[]>, team: string): Array<[number, number, string]> =>{
+  let result: Array<[number, number, string]> = [];
+
+  for(let i = 0; i < board.length; i++){
+    for(let k = 0; k < board[i].length; k++){
+      if(team === "white" && board[i][k].startsWith("w")){
+        result.push([i, k, board[i][k]])
+      }
+      if(team === "black" && !board[i][k].startsWith("w") && board[i][k] != ""){
+        result.push([i, k, board[i][k]])
+      }
+    }
+  }
+
+  return result;
+}
+
 /// This method will be used to check if a position (array) on the board exists in the positions (array of arrays) passed in
 /// returns a boolean 
 export const IsMoveArrayInGivenArray = (position: number[], givenMoves: number[][]): boolean =>{

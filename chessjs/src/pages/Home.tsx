@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "./moves";
-import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, ValidMoveCheckForCheck } from "./Utilities";
+import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, ValidMoveCheckForCheck, GetAllPeicesForTeam } from "./Utilities";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -57,7 +57,7 @@ const Home = () => {
         ClearHighlights();
         setTurn(!turn);
         TurnEndCheckForCheck(newBoard)
-        CheckForMate(newBoard)
+        CheckForMate(newBoard, turn)
         return;
   }
   // Checks for initial check on the board
@@ -86,18 +86,10 @@ const Home = () => {
       }
     } 
   }
-  const CheckForMate = (board: Array<string[]>) =>{
-    console.log('checking for checkmate')
-    const whiteKingPosition = FindAGivenPeice(board, "wking");
-    const blackKingPosition = FindAGivenPeice(board, "king");
+  const CheckForMate = (board: Array<string[]>, team: boolean) =>{
+      const whiteKingPosition = FindAGivenPeice(board, "wking");
+      const blackKingPosition = FindAGivenPeice(board, "king");
 
-    const allWhiteMoves = GetAllPossibleMovesForTeam(board, "white");
-    const allBlackMoves = GetAllPossibleMovesForTeam(board, "black");
-
-    if(blackCheck.current && blackKingPosition){
-      const blackKingMoves = getPossibleKingMoves(blackKingPosition[0], blackKingPosition[1], "black", board)
-      console.log('black king moves in check', blackKingMoves)
-      
       //this is actually simple one you think about it
       // if the king is in check, checking if the king itself can move to get out of check or checkmate is easy
       // how do i determine if other peices can block the king from being mated, the mechanism is in place though with the simulated board
@@ -108,10 +100,15 @@ const Home = () => {
       then end the game 
       */
 
-    }
     if(whiteCheck.current && whiteKingPosition){
-      const whiteKingMoves = getPossibleKingMoves(whiteKingPosition[0], whiteKingPosition[1], "white", board);
-      console.log('white king moves in check', whiteKingMoves)
+      //should always check for mate on the opposite team after the current team made a move
+
+      // reminder for me: !turn is white
+
+      const allTeamPeices = GetAllPeicesForTeam(board, "white");
+      
+      }
+
     }
 
   }
@@ -208,6 +205,7 @@ const Home = () => {
         );
       if(isValidMove){
       
+        //deep copy the board
       const newBoard = playingBoard.map(row => [...row]);
       newBoard[row][col] = "";
       newBoard[selected.row][selected.col] = ""
