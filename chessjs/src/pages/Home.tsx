@@ -87,29 +87,20 @@ const Home = () => {
     } 
   }
   const CheckForMate = (board: Array<string[]>, team: boolean) =>{
-      const whiteKingPosition = FindAGivenPeice(board, "wking");
-      const blackKingPosition = FindAGivenPeice(board, "king");
-
-      //this is actually simple one you think about it
-      // if the king is in check, checking if the king itself can move to get out of check or checkmate is easy
-      // how do i determine if other peices can block the king from being mated, the mechanism is in place though with the simulated board
-      // how do i determine to end the game or not?
-
-      /*I have the utilities to do this, might just have to brute force it by iterating through each peice on the board,
-      iterating through all of their possible moves for each peice, then ruinning ValidMoveCheckForCheck, if no blocker can be found
-      then end the game 
-      */
-
-    if(whiteCheck.current && whiteKingPosition){
-      //should always check for mate on the opposite team after the current team made a move
-
-      // reminder for me: !turn is white
-
-      const allTeamPeices = GetAllPeicesForTeam(board, "white");
       
-      }
+    //straight forward enough, implementation will be interesting though after a 2 week vacation
+    // fortunately brainstorming the code is 90% of the battle
 
-    }
+    /*
+    this method will simulate every single move the defending team in check can make
+    
+    1. iterate through the board, when you come to a defending team peice, simulate its moves
+    2. the simulation method should check to see if the king is in check after each move simulation
+    2a. if it finds that there is a possible move where the king is not in check, break the loop and break the check
+    2b. If it finds that there is no possible moves to bring the king out of check, return false and iterate to the next possible peice
+    3. continue
+    4. if the king is in check, no moves have been found to bring it out of check, and the king itself cannot move anywhere, End the game
+    */
 
   }
   const ResetGame= () =>{
