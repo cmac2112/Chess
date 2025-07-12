@@ -1,7 +1,43 @@
 //file for holding useful utilities to do things for the game that have no other place
 import {getPawnAttacksForKingMoveCalculation, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleQueenMoves, getPossibleRookMoves } from "./moves";
 
+//this method should return some sort of indicator to let the program know if it found any possible move where the king is no longer in check
+export const SimulateMovesFromAnArray = (initialBoard: Array<string[]>, peicePositionRow: number, peicePositionCol: number, peicePossibleMoves: number[][], team: string): boolean => {
+  
+  let peice = PeiceAtGivenPosition(initialBoard, peicePositionRow, peicePositionCol)
 
+  //got peice type, iterate through its possible moves then calculate its possible moves from that position again
+  //then using that new updated board, check for check again
+
+
+if(team == "white"){
+  for(let i = 0; i < peicePossibleMoves.length; i++){
+    let simBoard = initialBoard.map(row => [...row])
+    simBoard[peicePositionRow][peicePositionCol] = "";
+    simBoard[peicePossibleMoves[i][0]][peicePossibleMoves[i][1]] = peice;
+    
+    console.log("this is my sim board",simBoard)
+    let inCheck = ValidMoveCheckForCheck(simBoard, "black")
+    if(!inCheck){
+    return true; //found a valid move that wont put the king in check
+    }
+  }
+}
+if(team == "black"){
+  for(let i = 0; i < peicePossibleMoves.length; i++){
+    let simBoard = initialBoard.map(row => [...row])
+    simBoard[peicePositionRow][peicePositionCol] = "";
+    simBoard[peicePossibleMoves[i][0]][peicePossibleMoves[i][1]] = peice;
+    
+    console.log("this is my sim board",simBoard)
+    let inCheck = ValidMoveCheckForCheck(simBoard, "white")
+    if(!inCheck){
+    return true; //found a valid move that wont put the king in check
+    }
+  }
+}
+return false; // no moves found for this peice to make its king not in check
+}
 export const GetAllPeicesForTeam = (board: Array<string[]>, team: string): Array<[number, number, string]> =>{
   let result: Array<[number, number, string]> = [];
 

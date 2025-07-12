@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "./moves";
-import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, ValidMoveCheckForCheck, GetAllPeicesForTeam } from "./Utilities";
+import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, ValidMoveCheckForCheck, GetAllPeicesForTeam, GetPossibleMovesForAPeiceAtAPosition, SimulateMovesFromAnArray } from "./Utilities";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -35,8 +35,8 @@ const Home = () => {
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
-    ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
+    ["", "", "", "", "", "", "", ""],
+    ["","","","","wking","","","",],
   ]);
 
   //false = white turn
@@ -95,12 +95,50 @@ const Home = () => {
     this method will simulate every single move the defending team in check can make
     
     1. iterate through the board, when you come to a defending team peice, simulate its moves
+
     2. the simulation method should check to see if the king is in check after each move simulation
     2a. if it finds that there is a possible move where the king is not in check, break the loop and break the check
     2b. If it finds that there is no possible moves to bring the king out of check, return false and iterate to the next possible peice
     3. continue
     4. if the king is in check, no moves have been found to bring it out of check, and the king itself cannot move anywhere, End the game
     */
+
+    //1
+    //lets make it easy and check for white and black seperately for now
+    if(!team){        //white
+    for(let i = 0; i < board.length; i++){
+      for(let k = 0; k < board[i].length; k++){
+        if(board[i][k].startsWith("w")){
+          let movesToSimulate: number[][] = GetPossibleMovesForAPeiceAtAPosition(board, i, k, "white")
+          console.log("moves to simulate1", movesToSimulate);
+          console.log("for piece at position", i, k, PeiceAtGivenPosition(board, i, k))
+          //now we have the moves to simulate, throw them into the simulator method and it should check the rest for us
+          let possibleMove = SimulateMovesFromAnArray(board, i, k, movesToSimulate, "white");
+          if(possibleMove){
+            return; //found a valid move to bring the king out of check, skip the rest
+          }
+        }
+      }
+    }
+    //nothing has been found, end the game, black wins
+    console.log("black wins")
+  }else{
+    for(let i = 0; i < board.length; i++){
+      for(let k = 0; k < board[i].length; k++){
+        if(!board[i][k].startsWith("w") && board[i][k] != ""){
+          let movesToSimulate: number[][] = GetPossibleMovesForAPeiceAtAPosition(board, i, k, "black")
+          console.log("moves to simulate1", movesToSimulate);
+          console.log("for piece at position", i, k, PeiceAtGivenPosition(board, i, k))
+          //now we have the moves to simulate, throw them into the simulator method and it should check the rest for us
+          let possibleMove = SimulateMovesFromAnArray(board, i, k, movesToSimulate, "black");
+          if(possibleMove){
+            return; //found a valid move to bring the king out of check, skip the rest
+          }
+        }
+      }
+    }
+    console.log("white wins")
+  }
 
   }
   const ResetGame= () =>{
