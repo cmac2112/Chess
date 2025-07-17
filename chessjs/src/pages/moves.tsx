@@ -561,3 +561,5 @@ export const getPossibleQueenMoves = (row: number, col: number, team: string, bo
 
 
 
+//still some issues regarding checkmates such as when a targing peice is threatening the king from one side
+// program thinks that the king can move 1 space away since the program thinnks that space is free next turn

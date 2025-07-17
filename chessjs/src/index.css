@@ -33,6 +33,7 @@
   display: flex;
   justify-content: center;
   padding: 1rem;
+  position: relative;
 }
 .board-wood{
   border-radius: 2rem;
@@ -61,6 +62,17 @@
 
 .check-warning{
   padding-inline: 1rem;
+}
+.winner-box{
+  position: absolute;
+  background-color: #f2ca5c;
+  border-radius: 1rem;
+
+  
+}
+.winner-text{
+  padding: 0.5rem;
+  color: white;
 }
 
 .flash{

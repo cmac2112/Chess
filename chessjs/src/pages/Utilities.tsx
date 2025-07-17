@@ -1,5 +1,5 @@
 //file for holding useful utilities to do things for the game that have no other place
-import {getPawnAttacksForKingMoveCalculation, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleQueenMoves, getPossibleRookMoves } from "./moves";
+import {getPawnAttacksForKingMoveCalculation, getPossibleBishopMoves, getPossibleKingMoves, getPossibleKnightMoves, getPossibleQueenMoves, getPossibleRookMoves } from "./moves";
 
 //this method should return some sort of indicator to let the program know if it found any possible move where the king is no longer in check
 export const SimulateMovesFromAnArray = (initialBoard: Array<string[]>, peicePositionRow: number, peicePositionCol: number, peicePossibleMoves: number[][], team: string): boolean => {
@@ -149,10 +149,10 @@ export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string)
               case "queen":
                 possibleMoves = possibleMoves.concat(getPossibleQueenMoves(i, k, team, board));
                 break;
-              /*case "king":
-                otherTeamMoves = otherTeamMoves.concat(getDefaultKingMoves(i, k));
+              case "king":
+                possibleMoves = possibleMoves.concat(getPossibleKingMoves(i, k, team, board));
                 break;
-                */
+                
               default:
                 break;
               
@@ -177,10 +177,10 @@ export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string)
               case "wqueen":
                 possibleMoves = possibleMoves.concat(getPossibleQueenMoves(i, k, team, board));
                 break;
-              /*case "wking":
-                otherTeamMoves = otherTeamMoves.concat(getDefaultKingMoves(i, k));
+              case "wking":
+                possibleMoves = possibleMoves.concat(getPossibleKingMoves(i, k, team, board));
                 break;
-                */
+                
               default:
                 break;
           }
@@ -224,10 +224,10 @@ export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, pei
               case "queen":
                 moves = moves.concat(getPossibleQueenMoves(peicePositionRow, peicePositionCol, team, board));
                 break;
-              /*case "king":
-                otherTeamMoves = otherTeamMoves.concat(getDefaultKingMoves(peicePositionRow, peicePositionCol));
+              case "king":
+                moves = moves.concat(getPossibleKingMoves(peicePositionRow, peicePositionCol, team, board));
                 break;
-                */
+                
               default:
                 break;
               
@@ -252,10 +252,10 @@ export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, pei
               case "wqueen":
                 moves = getPossibleQueenMoves(peicePositionRow, peicePositionCol, team, board);
                 break;
-              /*case "wking":
-                otherTeamMoves = otherTeamMoves.concat(getDefaultKingMoves(peicePositionRow, peicePositionCol));
+              case "wking":
+                moves = moves.concat(getPossibleKingMoves(peicePositionRow, peicePositionCol, team, board));
                 break;
-                */
+                
               default:
                 break;
           }

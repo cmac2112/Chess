@@ -46,6 +46,8 @@ const Home = () => {
   //used to confirm board reset
   const [confirm, setConfirm] = useState<boolean>(false);
 
+  const [winner, setWinner] = useState<string>("");
+
   //track the checks of kings
   const whiteCheck = useRef<boolean>(false);
   const blackCheck = useRef<boolean>(false); 
@@ -122,6 +124,7 @@ const Home = () => {
     }
     //nothing has been found, end the game, black wins
     console.log("black wins")
+    setWinner("Black")
   }else{
     for(let i = 0; i < board.length; i++){
       for(let k = 0; k < board[i].length; k++){
@@ -138,6 +141,7 @@ const Home = () => {
       }
     }
     console.log("white wins")
+    setWinner("White");
   }
 
   }
@@ -152,6 +156,7 @@ const Home = () => {
       setPlayingBoard(startingPositions)
       setConfirm(false)
       setTurn(false)
+      setWinner("");
       let button = document.getElementById("reset")
       if(button){
       button.innerText = "Reset"
@@ -425,8 +430,15 @@ const Home = () => {
             </div>
             <p className="turn-indicator">Turn: {turn ? "Black" : "White"}</p>
           </div>
+        
         </div>
+
+        {winner != "" ? 
+        <div className="winner-box">
+        <p className="winner-text">Checkmate: {winner} team wins!</p>
+     </div> : <></>}
      </div>
+    
     </div>
   );
 };
