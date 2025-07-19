@@ -19,6 +19,7 @@ if(team == "white"){
     console.log("this is my sim board",simBoard)
     let inCheck = ValidMoveCheckForCheck(simBoard, "black")
     if(!inCheck){
+      console.log("i have found a valid move for white")
     return true; //found a valid move that wont put the king in check
     }
   }
@@ -32,6 +33,7 @@ if(team == "black"){
     console.log("this is my sim board",simBoard)
     let inCheck = ValidMoveCheckForCheck(simBoard, "white")
     if(!inCheck){
+      console.log("found valid move for black")
     return true; //found a valid move that wont put the king in check
     }
   }
@@ -78,6 +80,14 @@ export const FindAGivenPeice = (board: Array<string[]>, peice: string,): number[
 
 /// This function will find the intersection amongst these two arrays and remove it from kingMoves and return a possible moves array for the king
 export const removeIntersection = (kingMoves: Array<number[]>, otherTeamMoves: Array<number[]>): Array<number[]> => {
+
+  //need to run a quick simulation here
+
+  // 1. remove the king,
+  // 2. get all attacking mvoes
+
+
+
 return kingMoves.filter(kingMove => {
   // For each kingMove, check if it exists in otherTeamMoves
   return !otherTeamMoves.some(otherMove => {
@@ -253,7 +263,7 @@ export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, pei
                 moves = getPossibleQueenMoves(peicePositionRow, peicePositionCol, team, board);
                 break;
               case "wking":
-                moves = moves.concat(getPossibleKingMoves(peicePositionRow, peicePositionCol, team, board));
+                moves = getPossibleKingMoves(peicePositionRow, peicePositionCol, team, board);
                 break;
                 
               default:

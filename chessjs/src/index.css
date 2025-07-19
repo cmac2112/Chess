@@ -78,6 +78,38 @@
 .flash{
   animation: flash-animation 0.5s ease-in-out;
 }
+
+.pawn-promotion-menu-container{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f1d381;
+  border-radius: 1rem;
+  box-shadow: black;
+}
+.pawn-promotion-header-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pawn-promotion-header{
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 1rem;
+}
+.pawn-promotion-list{
+  margin: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+.promotion-button{
+  padding-inline: 1rem;
+
+}
+.promotion-button:hover{
+  cursor: pointer;
+}
 @keyframes flash-animation{
   0% { background-color: transparent;}
   25% { background-color: yellow;} 
