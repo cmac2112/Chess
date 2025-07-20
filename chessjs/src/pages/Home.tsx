@@ -1,7 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef} from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "../Utilities/moves";
-import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, PeiceAtGivenPosition, ValidMoveCheckForCheck, GetAllPeicesForTeam, GetPossibleMovesForAPeiceAtAPosition, SimulateMovesFromAnArray } from "../Utilities/Utilities";
+import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, ValidMoveCheckForCheck, GetPossibleMovesForAPeiceAtAPosition, SimulateMovesFromAnArray } from "../Utilities/Utilities";
 
 const Home = () => {
   const [selected, setSelected] = useState({
@@ -26,30 +26,26 @@ const Home = () => {
   ]
 
   
-
-  //used as playing board, should rename this
   const [playingBoard, setPlayingBoard] = useState<string[][]>([
     
-    ["", "", "", "", "", "", "", "king"],
-    ["", "", "", "wpawn", "", "", "", ""],
+    ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
+    ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["queen", "", "", "", "", "", "", ""],
-    ["", "", "", "wking", "wpawn", "", "queen", ""],
-    ["queen", "", "", "", "", "", "", ""],
-    ["","","","","","","","",],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
+    ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]);
 
   //false = white turn
   //true = black turn
   const [turn, setTurn] = useState<boolean>(false);
 
-  //used to confirm board reset
   const [confirm, setConfirm] = useState<boolean>(false);
 
   const [winner, setWinner] = useState<string>("");
 
-  //track the checks of kings
   const whiteCheck = useRef<boolean>(false);
   const blackCheck = useRef<boolean>(false); 
 
@@ -57,57 +53,65 @@ const Home = () => {
 
   const [pawnPromotion, setPawnPromotion] = useState<string>("");
 
-
   const HandlePromotion = (peiceType: string) => {
+    let promotionBoard = playingBoard.map(row => [...row]);
     if (pawnPromotion === "white") {
-      const newBoard = playingBoard.map(row => [...row]);
-      for (let i = 0; i < newBoard[0].length; i++) {
-        if (newBoard[0][i] === "wpawn") {
-          newBoard[0][i] = "w" + peiceType.toLowerCase();
+      for (let i = 0; i < promotionBoard[0].length; i++) {
+        if (promotionBoard[0][i] === "wpawn") {
+          promotionBoard[0][i] = "w" + peiceType.toLowerCase();
         }
       }
-      setPlayingBoard(newBoard);
-      setPawnPromotion("");
     }
     if (pawnPromotion === "black") {
-      const newBoard = playingBoard.map(row => [...row]);
-      for (let i = 0; i < newBoard[7].length; i++) {
-        if (newBoard[7][i] === "pawn") {
-          newBoard[7][i] = peiceType.toLowerCase();
+      for (let i = 0; i < promotionBoard[7].length; i++) {
+        if (promotionBoard[7][i] === "pawn") {
+          promotionBoard[7][i] = peiceType.toLowerCase();
         }
       }
-      setPlayingBoard(newBoard);
-      setPawnPromotion("");
+      
     }
+    setPlayingBoard(promotionBoard);
+      setPawnPromotion("");
+      
+      TurnEndCheckForCheck(promotionBoard);
+      CheckForMate(promotionBoard, !turn)
   }
   const HandleTurnChange = (newBoard: Array<string[]>) =>{
-        setPlayingBoard(newBoard); //update board with new board copy, rerender board and rerender the entire component
+        setPlayingBoard(newBoard); 
         setSelected({ peice: "", team: "", row: -1, col: -1 });
         ClearHighlights();
-        setTurn(!turn);
-        TurnEndCheckForPawnPromotion(newBoard);
-        TurnEndCheckForCheck(newBoard)
-        CheckForMate(newBoard, turn)
+        
+
+        // promotion method handles checking for checks and mate on new promoted peice
+        // remedy for state issues 
+        const boardPromotion = TurnEndCheckForPawnPromotion(newBoard);
+
+        if(!boardPromotion){
+          TurnEndCheckForCheck(newBoard);
+          CheckForMate(newBoard, turn)
+        }
+        setTurn(!turn)
         setMessage("");
         return;
   }
+
   //TODO move these methods to their own file and use a context provider to provide state context to them and the board
   // would make code look a lot better
 
-  
-  const TurnEndCheckForPawnPromotion = (board: Array<string[]>) => {
+
+  const TurnEndCheckForPawnPromotion = (board: Array<string[]>): boolean => {
     //check top board for white pawns
-    console.log("cheacking for promotions")
     for(let i = 0; i < board.length; i ++){
       if(board[0][i] == "wpawn"){
-        console.log(board[0][i])
         setPawnPromotion("white")
+        return true;
       }
       if(board[7][i] == "pawn"){
         setPawnPromotion("black")
+        return true;
       }
     }
-    //check bottom board for black pawns
+   return false;
   }
 
   const TurnEndCheckForCheck = (board: Array<string[]>) => {
@@ -134,29 +138,8 @@ const Home = () => {
     } 
   }
   
-  const CheckForMate = (board: Array<string[]>, team: boolean) =>{
-      
-    //straight forward enough, implementation will be interesting though after a 2 week vacation
-    // fortunately brainstorming the code is 90% of the battle
-
-    /*
-    this method will simulate every single move the defending team in check can make
-    
-    1. iterate through the board, when you come to a defending team peice, simulate its moves
-
-    2. the simulation method should check to see if the king is in check after each move simulation
-    2a. if it finds that there is a possible move where the king is not in check, break the loop and break the check
-    2b. If it finds that there is no possible moves to bring the king out of check, return false and iterate to the next possible peice
-    3. continue
-    4. if the king is in check, no moves have been found to bring it out of check, and the king itself cannot move anywhere, End the game
-    */
-
-    //1
-    //lets make it easy and check for white and black seperately for now
-    console.log(team)
-    
-    if(team){        //white
-
+  const CheckForMate = (board: Array<string[]>, team: boolean) =>{  
+    if(team){
     for(let i = 0; i < board.length; i++){
       for(let k = 0; k < board[i].length; k++){
         if(board[i][k].startsWith("w")){
@@ -176,10 +159,9 @@ const Home = () => {
       for(let k = 0; k < board[i].length; k++){
         if(!board[i][k].startsWith("w") && board[i][k] != ""){
           let movesToSimulate: number[][] = GetPossibleMovesForAPeiceAtAPosition(board, i, k, "black")
-          //now we have the moves to simulate, throw them into the simulator method and it should check the rest for us
           let possibleMove = SimulateMovesFromAnArray(board, i, k, movesToSimulate, "black");
           if(possibleMove){
-            return; //found a valid move to bring the king out of check, skip the rest
+            return;
           }
         }
       }
@@ -200,6 +182,9 @@ const Home = () => {
       setConfirm(false)
       setTurn(false)
       setWinner("");
+      whiteCheck.current = false;
+      blackCheck.current = false;
+      setMessage("");
       let button = document.getElementById("reset")
       if(button){
       button.innerText = "Reset"
@@ -319,7 +304,6 @@ const Home = () => {
       let check = false;      
         possibleMoves.current.forEach((e) => {
           if(e[0] == row && e[1] == col){
-            console.log('good move');
             check = true;
           }
           }
@@ -362,7 +346,6 @@ const Home = () => {
         
 
         }else{
-          console.log('bad move')
           return;
         }
 

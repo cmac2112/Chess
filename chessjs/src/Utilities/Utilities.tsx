@@ -16,10 +16,8 @@ if(team == "white"){
     simBoard[peicePositionRow][peicePositionCol] = "";
     simBoard[peicePossibleMoves[i][0]][peicePossibleMoves[i][1]] = peice;
     
-    console.log("this is my sim board",simBoard)
     let inCheck = ValidMoveCheckForCheck(simBoard, "black")
     if(!inCheck){
-      console.log("i have found a valid move for white")
     return true; //found a valid move that wont put the king in check
     }
   }
@@ -30,10 +28,8 @@ if(team == "black"){
     simBoard[peicePositionRow][peicePositionCol] = "";
     simBoard[peicePossibleMoves[i][0]][peicePossibleMoves[i][1]] = peice;
     
-    console.log("this is my sim board",simBoard)
     let inCheck = ValidMoveCheckForCheck(simBoard, "white")
     if(!inCheck){
-      console.log("found valid move for black")
     return true; //found a valid move that wont put the king in check
     }
   }

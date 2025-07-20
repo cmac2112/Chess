@@ -1,26 +1,36 @@
+
+.game{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .row{
   display: flex;
 
 }
 .box{
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
   background-color: #fbf5de;
   font-size: x-small;
+  touch-action: manipulation; /* Improves touch responsiveness */
+}
+.peice{
+  height:60px;
 }
 .box-filled{
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
   background-color: #f2ca5c;
   font-size: x-small;
+  touch-action: manipulation; /* Improves touch responsiveness */
 }
 .highlight{
   background-color: #ff0000;
@@ -32,18 +42,20 @@
 .board-container{
   display: flex;
   justify-content: center;
-  padding: 1rem;
+  align-items: center;
+  padding: 2rem;
   position: relative;
 }
 .board-wood{
   border-radius: 2rem;
-  padding: 4rem;
+  padding: 2rem;
   background-image: url('assets/walnut-wood-texture.jpg');
 }
 .info-bar{
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem;
+  align-items: center;
+  gap: 5px;
 }
 .turn-indicator{
   font-family: Arial, Helvetica, sans-serif;
@@ -58,6 +70,9 @@
 .check-signal{
   background-color:indianred;
   color: white;
+  font-size: small;
+  text-align: center;
+  border-radius: 2rem;
 }
 
 .check-warning{
@@ -116,4 +131,17 @@
   50% { background-color: transparent}
   75% { background-color: yellow;} 
   100% { background-color: transparent;}
+}
+
+@media(max-width: 1024px){
+  .box, .box-filled{
+    width: 40px;
+    height:40px;
+  }
+  .board-container{
+    padding: 2rem;
+  }
+  .peice{
+    height: 40px;
+  }
 }

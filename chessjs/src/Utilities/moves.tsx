@@ -700,10 +700,7 @@ export const getPossibleKingMoves = (
     [row + 1, col + 1],
   ];
 
-  // i need to get all of the attack squares rather than just calculating their moves here
-  // so remove the king and simulate the attacks from the other team would be the easy way
 
-  // or re-write a bunch of methods
   const validKingMoves = removeIntersection(kingMoves, otherTeamMoves);
 
   const filteredKingMoves = validKingMoves.filter(([r, c]) => {
@@ -711,7 +708,6 @@ export const getPossibleKingMoves = (
     const inBounds = r >= 0 && r <= 7 && c >= 0 && c <= 7;
 
     if (!inBounds) {
-      console.log("not in bounds");
       return false;
     }
 
