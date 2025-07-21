@@ -34,8 +34,8 @@ const Home = () => {
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
-    ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
+    ["", "", "", "", "", "", "", ""],
+    ["","","","","king","","wqueen","",],
   ]);
 
   //false = white turn

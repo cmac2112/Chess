@@ -301,11 +301,18 @@ export const getPossibleRookMoves = (
 ): number[][] => {
   let possibleMoves: Array<number[]> = [];
 
-  // need to remove the king from the board to get all of the attacking squares through it as well
-  // because how this is built the king move calculation thinks that the space on the other side of this
-  // attacking rook is a possible move, if we just remove the king then add it back
+// im an idiot and need to rewrite this again this does not work regarding movement and king checks
 
-  //this will need to be rewritten to calculate from the peice out rather than from side in
+// going back to removing the king and simulating the move, could remove the king, get all attacking squares without the king
+// add king back and remove blocking moves but also return the attacking squares to use that against the king calculation
+// so return two arrays, one for normal movement, one without the king for attacking squares
+
+/*
+because how this is setup now is if there is that empty space behind the king then the rook can move there
+i put that there because i was being dumb and thought that was a quick fix for the king check calculation not working correctly
+however for the sliding peices i will need to get all of the squares that could be attacked by them so return two arrays and use the attacking array
+when checking for check and mate, and the movement array for doing normal movement, could be switched with a method argument 
+*/
 
   switch (team) {
     case "white":
@@ -700,7 +707,10 @@ export const getPossibleKingMoves = (
     [row + 1, col + 1],
   ];
 
+  // i need to get all of the attack squares rather than just calculating their moves here
+  // so remove the king and simulate the attacks from the other team would be the easy way
 
+  // or re-write a bunch of methods
   const validKingMoves = removeIntersection(kingMoves, otherTeamMoves);
 
   const filteredKingMoves = validKingMoves.filter(([r, c]) => {
