@@ -1,4 +1,4 @@
-import { removeIntersection } from "./Utilities";
+import { removeIntersection, FindAGivenPeice, RemovePeiceAtPosition } from "./Utilities";
 
 export const getPossiblePawnMoves = (
   row: number,
@@ -297,7 +297,9 @@ export const getPossibleRookMoves = (
   row: number,
   col: number,
   team: string,
-  board: Array<string[]>
+  board: Array<string[]>,
+  returnAttackingSquares: boolean = false //option to return the attacking squares by removing the king
+  //should only be used when getting king moves calculation
 ): number[][] => {
   let possibleMoves: Array<number[]> = [];
 
@@ -314,26 +316,29 @@ however for the sliding peices i will need to get all of the squares that could 
 when checking for check and mate, and the movement array for doing normal movement, could be switched with a method argument 
 */
 
+  let boardCopy = board.map(row => [...row]);
+
   switch (team) {
     case "white":
+
+    if(returnAttackingSquares){
+  const blackKingPosition = FindAGivenPeice(boardCopy, "king")
+  
+  if(blackKingPosition != null){
+    boardCopy = RemovePeiceAtPosition(boardCopy, blackKingPosition);
+  }
+}
       //build it from the peice out
 
       //north
       let rookMoveNorth: Array<number[]> = [];
 
       for (let i = row - 1; i >= 0; i--) {
-        if (board[i][col] === "") {
+        if (boardCopy[i][col] === "") {
           rookMoveNorth.push([i, col]);
           continue;
         }
-        if (board[i][col] === "king") {
-          rookMoveNorth.push([i, col]);
-          if (i - 1 >= 0 && board[row-1][col] == "") {
-            rookMoveNorth.push([i - 1, col]);
-          }
-          break;
-        }
-        if (!board[i][col].startsWith("w")) {
+        if (!boardCopy[i][col].startsWith("w")) {
           rookMoveNorth.push([i, col]);
           break;
         }
@@ -341,18 +346,12 @@ when checking for check and mate, and the movement array for doing normal moveme
       }
       let rookMoveSouth: Array<number[]> = [];
       for (let i = row + 1; i <= 7; i++) {
-        if (board[i][col] === "") {
+        if (boardCopy[i][col] === "") {
           rookMoveSouth.push([i, col]);
           continue;
         }
-        if (board[i][col] === "king") {
-          rookMoveSouth.push([i, col]);
-          if (i + 1 <= 7 && board[row+1][col] == "") {
-            rookMoveSouth.push([i + 1, col]);
-          }
-          break;
-        }
-        if (!board[i][col].startsWith("w")) {
+      
+        if (!boardCopy[i][col].startsWith("w")) {
           rookMoveSouth.push([i, col]);
           break;
         }
@@ -362,18 +361,11 @@ when checking for check and mate, and the movement array for doing normal moveme
       // East
       let rookMoveEast: Array<number[]> = [];
       for (let j = col + 1; j <= 7; j++) {
-        if (board[row][j] === "") {
+        if (boardCopy[row][j] === "") {
           rookMoveEast.push([row, j]);
           continue;
         }
-        if (board[row][j] === "king") {
-          rookMoveEast.push([row, j]);
-          if (j + 1 <= 7 && board[row][col+1] == "") {
-            rookMoveEast.push([row, j + 1]);
-          }
-          break;
-        }
-        if (!board[row][j].startsWith("w")) {
+        if (!boardCopy[row][j].startsWith("w")) {
           rookMoveEast.push([row, j]);
           break;
         }
@@ -383,18 +375,11 @@ when checking for check and mate, and the movement array for doing normal moveme
       // West
       let rookMoveWest: Array<number[]> = [];
       for (let j = col - 1; j >= 0; j--) {
-        if (board[row][j] === "") {
+        if (boardCopy[row][j] === "") {
           rookMoveWest.push([row, j]);
           continue;
         }
-        if (board[row][j] === "king") {
-          rookMoveWest.push([row, j]);
-          if (j - 1 >= 0 && board[row][col-1] == "") {
-            rookMoveWest.push([row, j - 1]);
-          }
-          break;
-        }
-        if (!board[row][j].startsWith("w")) {
+        if (!boardCopy[row][j].startsWith("w")) {
           rookMoveWest.push([row, j]);
           break;
         }
@@ -411,21 +396,22 @@ when checking for check and mate, and the movement array for doing normal moveme
 
       break;
     case "black":
+
+    if(returnAttackingSquares){
+  const whiteKingPosition = FindAGivenPeice(boardCopy, "wking")
+  
+  if(whiteKingPosition != null){
+    boardCopy = RemovePeiceAtPosition(boardCopy, whiteKingPosition);
+  }
+}
       let rookMoveNorthBlack: Array<number[]> = [];
 
       for (let i = row - 1; i >= 0; i--) {
-        if (board[i][col] === "") {
+        if (boardCopy[i][col] === "") {
           rookMoveNorthBlack.push([i, col]);
           continue;
         }
-        if (board[i][col] === "king") {
-          rookMoveNorthBlack.push([i, col]);
-          if (i - 1 >= 0 && board[row-1][col] == "") {
-            rookMoveNorthBlack.push([i - 1, col]);
-          }
-          break;
-        }
-        if (!board[i][col].startsWith("w")) {
+        if (boardCopy[i][col].startsWith("w")) {
           rookMoveNorthBlack.push([i, col]);
           break;
         }
@@ -433,18 +419,11 @@ when checking for check and mate, and the movement array for doing normal moveme
       }
       let rookMoveSouthBlack: Array<number[]> = [];
       for (let i = row + 1; i <= 7; i++) {
-        if (board[i][col] === "") {
+        if (boardCopy[i][col] === "") {
           rookMoveSouthBlack.push([i, col]);
           continue;
         }
-        if (board[i][col] === "wking") {
-          rookMoveSouthBlack.push([i, col]);
-          if (i + 1 <= 7 && board[row+1][col] == "") {
-            rookMoveSouthBlack.push([i + 1, col]);
-          }
-          break;
-        }
-        if (board[i][col].startsWith("w")) {
+        if (boardCopy[i][col].startsWith("w")) {
           rookMoveSouthBlack.push([i, col]);
           break;
         }
@@ -454,18 +433,11 @@ when checking for check and mate, and the movement array for doing normal moveme
       // East
       let rookMoveEastBlack: Array<number[]> = [];
       for (let j = col + 1; j <= 7; j++) {
-        if (board[row][j] === "") {
+        if (boardCopy[row][j] === "") {
           rookMoveEastBlack.push([row, j]);
           continue;
         }
-        if (board[row][j] === "wking") {
-          rookMoveEastBlack.push([row, j]);
-          if (j + 1 <= 7 && board[row][col+1] == "") {
-            rookMoveEastBlack.push([row, j + 1]);
-          }
-          break;
-        }
-        if (board[row][j].startsWith("w")) {
+        if (boardCopy[row][j].startsWith("w")) {
           rookMoveEastBlack.push([row, j]);
           break;
         }
@@ -475,18 +447,11 @@ when checking for check and mate, and the movement array for doing normal moveme
       // West
       let rookMoveWestBlack: Array<number[]> = [];
       for (let j = col - 1; j >= 0; j--) {
-        if (board[row][j] === "") {
+        if (boardCopy[row][j] === "") {
           rookMoveWestBlack.push([row, j]);
           continue;
         }
-        if (board[row][j] === "wking") {
-          rookMoveWestBlack.push([row, j]);
-          if (j - 1 >= 0 && board[row][col-1] == "") {
-            rookMoveWestBlack.push([row, j - 1]);
-          }
-          break;
-        }
-        if (board[row][j].startsWith("w")) {
+        if (boardCopy[row][j].startsWith("w")) {
           rookMoveWestBlack.push([row, j]);
           break;
         }
@@ -610,17 +575,13 @@ export const getPossibleKingMoves = (
 ): Array<number[]> => {
   let otherTeamMoves: Array<number[]> = [];
 
-  for (let i = 0; i < 8; i++) {
-    //outer is going to keep track of the row
-    for (let k = 0; k < 8; k++) {
-      //inner loop is going to iterate from left to right "col"
-      //this will probably be ugly but im unsure of any better way to do this at the moment
-
-      //we have the selected team
+  for (let i = 0; i <= 7; i++) {
+    for (let k = 0; k <= 7; k++) {
       let peice = board[i][k];
 
+
       if (team == "white") {
-        const otherTeam = "black";
+        const otherTeam = "black"; // todo, put this in a this in some sort of enum or something
         switch (peice) {
           case "":
             break;
@@ -641,12 +602,12 @@ export const getPossibleKingMoves = (
             break;
           case "rook":
             otherTeamMoves = otherTeamMoves.concat(
-              getPossibleRookMoves(i, k, otherTeam, board)
+              getPossibleRookMoves(i, k, otherTeam, board, true)
             );
             break;
           case "queen":
             otherTeamMoves = otherTeamMoves.concat(
-              getPossibleQueenMoves(i, k, otherTeam, board)
+              getPossibleQueenMoves(i, k, otherTeam, board, true)
             );
             break;
           case "king":
@@ -677,12 +638,12 @@ export const getPossibleKingMoves = (
             break;
           case "wrook":
             otherTeamMoves = otherTeamMoves.concat(
-              getPossibleRookMoves(i, k, otherTeam, board)
+              getPossibleRookMoves(i, k, otherTeam, board, true)
             );
             break;
           case "wqueen":
             otherTeamMoves = otherTeamMoves.concat(
-              getPossibleQueenMoves(i, k, otherTeam, board)
+              getPossibleQueenMoves(i, k, otherTeam, board, true)
             );
             break;
           case "wking":
@@ -753,7 +714,8 @@ export const getPossibleQueenMoves = (
   row: number,
   col: number,
   team: string,
-  board: Array<string[]>
+  board: Array<string[]>,
+  returnAttackingSquares: boolean = false
 ): Array<number[]> => {
   let possibleMoves: Array<number[]> = [];
 
@@ -761,7 +723,7 @@ export const getPossibleQueenMoves = (
     getPossibleBishopMoves(row, col, team, board)
   );
   possibleMoves = possibleMoves.concat(
-    getPossibleRookMoves(row, col, team, board)
+    getPossibleRookMoves(row, col, team, board, returnAttackingSquares)
   );
 
   return possibleMoves;

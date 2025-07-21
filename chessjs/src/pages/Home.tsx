@@ -28,13 +28,13 @@ const Home = () => {
   
   const [playingBoard, setPlayingBoard] = useState<string[][]>([
     
-    ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
+    ["rook", "knight", "bishop", "", "queen", "bishop", "knight", "rook"],
     ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
+    ["wking", "", "", "", "", "", "", ""],
     ["","","","","king","","wqueen","",],
   ]);
 

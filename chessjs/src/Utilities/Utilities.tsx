@@ -295,3 +295,9 @@ export const ValidMoveCheckForCheck = (board: Array<string[]>, targetingTeam: st
   return result;
 }
 
+export const RemovePeiceAtPosition = (board: Array<string[]>, position: number[]): string[][] => {
+  board[position[0]][position[1]] = "";
+
+  let newboard = board.map(row => [...row]);
+  return newboard;
+}
