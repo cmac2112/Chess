@@ -364,7 +364,14 @@ const Home = () => {
     const startBox = document.getElementById(`${startRow}, ${startCol}`);
     const destinationBox = document.getElementById(`${destinationRow}, ${destinationCol}`);
 
-    if (!startBox || !destinationBox) return;
+    if (!startBox || !destinationBox) {
+      const originalPiece = startBox?.querySelector('.peice') || startBox?.querySelector('img');
+      if (originalPiece) {
+        originalPiece.style.visibility = 'visible';
+      }
+      onComplete();
+      return;
+    }
 
     const startRect = startBox.getBoundingClientRect();
     const destRect = destinationBox.getBoundingClientRect();
