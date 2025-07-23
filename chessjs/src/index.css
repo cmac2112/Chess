@@ -20,7 +20,16 @@
   touch-action: manipulation; /* Improves touch responsiveness */
 }
 .peice{
-  height:60px;
+  height: 60px;
+  transition: transform 0.1s ease-in;
+}
+.peice:hover{
+  animation: bigger 0.1s ease-in;
+  transform: scale(1.08);
+}
+@keyframes bigger{
+  0% { transform: scale(1);}
+  100% { transform: scale(1.08);}
 }
 .box-filled{
   width: 60px;
@@ -38,6 +47,10 @@
 .box:hover{
   cursor: pointer;
   background-color: #d0d0d0;
+}
+.box-filled:hover{
+  cursor: pointer;
+  background-color: #f1d381;
 }
 .board-container{
   display: flex;
