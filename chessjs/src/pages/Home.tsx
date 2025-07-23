@@ -53,8 +53,6 @@ const Home = () => {
 
   const [pawnPromotion, setPawnPromotion] = useState<string>("");
 
-  const [animationInProgress, setAnimationInProgress] = useState<boolean>(false);
-
   const HandlePromotion = (peiceType: string) => {
     let promotionBoard = playingBoard.map(row => [...row]);
     if (pawnPromotion === "white") {
