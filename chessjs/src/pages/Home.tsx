@@ -53,6 +53,12 @@ const Home = () => {
 
   const [pawnPromotion, setPawnPromotion] = useState<string>("");
 
+  const [startModalOpen, setStartModalOpen] = useState<boolean>(true);
+  const [singleplayer, setSingleplayer] = useState<boolean | null>(null);
+
+  const [difficultySelect, setDifficultySelect] = useState<string | null>(null);
+  const [difficultyModal, setDifficultyModal] = useState<boolean>(false);
+
   const HandlePromotion = (peiceType: string) => {
     let promotionBoard = playingBoard.map(row => [...row]);
     if (pawnPromotion === "white") {
@@ -432,8 +438,20 @@ const Home = () => {
     setIsFlashing(true);
     setTimeout(() => {
       setIsFlashing(false);
-
     }, 500)
+  }
+
+  const HandleDifficultyModal = () => {
+    setStartModalOpen(false);
+    setDifficultyModal(true);
+  }
+  const HandleSetDifficulty = (diff: string) => {
+setDifficultySelect(diff);
+setSingleplayer(true)
+  }
+  const HandleMultiplayer = () =>{
+    setSingleplayer(false);
+    setStartModalOpen(false);
   }
   
   return (
@@ -474,6 +492,30 @@ const Home = () => {
     </div>
     
     : <></>}
+    {startModalOpen ? 
+    <div className="pawn-promotion-menu-container">
+      <div className="pawn-promotion-header-container">
+        <h2 className="pawn-promotion-header">Start Menu</h2>
+      </div>
+      <div className="pawn-promotion-list">
+        <button className="promotion-button" onClick={() => HandleDifficultyModal}>Singleplayer</button>
+        <button className="promotion-button" onClick={() => HandleMultiplayer}>Multiplayer</button>
+
+      </div>
+    </div> : <></>}
+
+    {difficultyModal ? 
+    <div className="pawn-promotion-menu-container">
+      <div className="pawn-promotion-header-container">
+        <h2 className="pawn-promotion-header">Start Menu</h2>
+      </div>
+      <div className="pawn-promotion-list">
+        <button className="promotion-button" onClick={() => HandleSetDifficulty("easy")}>Easy</button>
+        
+
+
+      </div>
+    </div> : <></>}
     </div>
   );
 };
