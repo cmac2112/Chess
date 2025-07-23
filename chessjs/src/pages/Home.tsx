@@ -32,10 +32,10 @@ const Home = () => {
     ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "wqueen", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["wking", "", "", "rook", "", "", "", ""],
-    ["","","","","wrook","","","",],
+    ["", "", "", "", "", "", "", ""],
+    ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
+    ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
   ]);
 
   //false = white turn
@@ -52,6 +52,9 @@ const Home = () => {
   const [message, setMessage] = useState<string>("");
 
   const [pawnPromotion, setPawnPromotion] = useState<string>("");
+
+  const [animatingPiece, setAnimatingPiece] = useState<string | null>(null);
+  const [animationInProgress, setAnimationInProgress] = useState<boolean>(false);
 
   const HandlePromotion = (peiceType: string) => {
     let promotionBoard = playingBoard.map(row => [...row]);
@@ -144,15 +147,13 @@ const Home = () => {
       for(let k = 0; k < board[i].length; k++){
         if(board[i][k].startsWith("w")){
           let movesToSimulate: number[][] = GetPossibleMovesForAPeiceAtAPosition(board, i, k, "white")
-          //now we have the moves to simulate, throw them into the simulator method and it should check the rest for us
           let possibleMove = SimulateMovesFromAnArray(board, i, k, movesToSimulate, "white");
           if(possibleMove){
-            return; //found a valid move to bring the king out of check, skip the rest
+            return;
           }
         }
       }
     }
-    //nothing has been found, end the game, black wins
     setWinner("Black")
   }else{
     for(let i = 0; i < board.length; i++){
@@ -192,6 +193,9 @@ const Home = () => {
     }
     
   }
+
+  //todo as well, to make the code cleaner move this and all state management to a context provider
+
   const handleOnClick = (
     peice: string,
     team: string,
@@ -252,14 +256,14 @@ const Home = () => {
 
       return;
     } else if (selected.col === col && selected.row === row) {
-
+      //deselect
       ClearHighlights();
       setSelected({ peice: "", team: "", row: -1, col: -1 })
       possibleMoves.current = [];
       return;
 
     }else if(selected.peice != "" && team != "" && selected.team != team) { 
-      
+      //capture
       //check to see if the capture move is valid
       if (possibleMoves.current) {
         const isValidMove = possibleMoves.current.some(
@@ -296,11 +300,11 @@ const Home = () => {
             return;
           }
         }
-      
-      HandleTurnChange(newBoard);
-      } }
+      HandleMoveAnimation(selected.peice, selected.row, selected.col, row, col, ()=> HandleTurnChange(newBoard))
+      } 
+    }
     }else{
-      //if something is selected this will run down here
+      //handle normal move no capture
       let check = false;      
         possibleMoves.current.forEach((e) => {
           if(e[0] == row && e[1] == col){
@@ -342,15 +346,64 @@ const Home = () => {
           }
         }
 
-        HandleTurnChange(newBoard);
-        
-
+        HandleMoveAnimation(selected.peice, selected.row, selected.col, row, col, () => HandleTurnChange(newBoard))
         }else{
           return;
         }
 
     }
   };
+
+  const HandleMoveAnimation = (
+    peice: string,
+    startRow: number,
+    startCol: number,
+    destinationRow: number,
+    destinationCol: number,
+    onComplete: () => void,
+  ) => {
+    const startBox = document.getElementById(`${startRow}, ${startCol}`);
+    const destinationBox = document.getElementById(`${destinationRow}, ${destinationCol}`);
+
+    if (!startBox || !destinationBox) return;
+
+    const startRect = startBox.getBoundingClientRect();
+    const destRect = destinationBox.getBoundingClientRect();
+
+    const pieceElem = document.createElement('div');
+    pieceElem.className = 'piece-animation';
+    pieceElem.style.position = 'fixed';
+    pieceElem.style.left = `${startRect.left}px`;
+    pieceElem.style.top = `${startRect.top}px`;
+    pieceElem.style.width = `${startRect.width}px`;
+    pieceElem.style.height = `${startRect.height}px`;
+    pieceElem.style.zIndex = '1000';
+    pieceElem.style.pointerEvents = 'none';
+
+    pieceElem.innerHTML = startBox.innerHTML;
+
+    document.body.appendChild(pieceElem);
+
+    const originalPiece = startBox.querySelector('.peice') || startBox.querySelector('img');
+  if (originalPiece) {
+    (originalPiece as HTMLElement).style.visibility = 'hidden';
+  }
+    pieceElem.animate(
+      [
+        { left: `${startRect.left}px`, top: `${startRect.top}px` },
+        { left: `${destRect.left}px`, top: `${destRect.top}px` }
+      ],
+      {
+        duration: 200,
+        easing: 'ease-in-out'
+      }
+    ).onfinish = () => {
+      pieceElem.remove();
+
+    
+    onComplete();
+    };
+  }
   // Store original background colors in a Map
   const originalBgColors = useRef<Map<string, string>>(new Map());
 
@@ -432,7 +485,6 @@ const Home = () => {
     setIsFlashing(true);
     setTimeout(() => {
       setIsFlashing(false);
-
     }, 500)
   }
   
