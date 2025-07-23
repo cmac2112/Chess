@@ -28,14 +28,14 @@ const Home = () => {
   
   const [playingBoard, setPlayingBoard] = useState<string[][]>([
     
-    ["rook", "knight", "bishop", "", "queen", "bishop", "knight", "rook"],
+    ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
     ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "king", "", "", "", ""],
+    ["", "", "", "wqueen", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["wking", "", "", "", "", "", "", ""],
-    ["","","","","","","wqueen","",],
+    ["wking", "", "", "rook", "", "", "", ""],
+    ["","","","","wrook","","","",],
   ]);
 
   //false = white turn

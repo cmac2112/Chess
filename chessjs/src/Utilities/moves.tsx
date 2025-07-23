@@ -90,13 +90,13 @@ export const getPawnAttacksForKingMoveCalculation = (
   //should individually call this for each pawn on the board so just return this
 
   // no out of bounds checking so come back to this if index errors happen
-  if (team == "black") {
+  if (team == "black" && row < 7 && row > 0 && col < 7 && col > 0) {
     return [
       [row + 1, col + 1],
       [row + 1, col - 1],
     ];
   }
-  if (team == "white") {
+  if (team == "white" && row < 7 && row > 0 && col < 7 && col > 0) {
     return [
       [row - 1, col + 1],
       [row - 1, col - 1],
@@ -116,7 +116,6 @@ export const getPossibleBishopMoves = (
 
   let boardCopy = board.map(row => [...row]);
 
-  console.log("test'")
 
   switch (team) {
     case "white":
@@ -130,147 +129,157 @@ export const getPossibleBishopMoves = (
 
     //up right
     let UpRight:Array<number[]> = [];
-    for(let r = row; r >= 0; r--){
-      for(let c = col; c <=7; c++){
-        if(boardCopy[r][c] === ""){
-          UpRight.push([r, c]);
-          continue;
-        }
-        if(!boardCopy[r][c].startsWith("w")){
-          UpRight.push([r, c]);
-          break;
-        }
+    let cL = col - 1;
+    let cR = col + 1;
+    for(let r = row - 1; r >= 0; r--){
+      if (cR > 7 || cR < 0) break;
+      if(board[r][cR] === ""){
+        UpRight.push([r, cR])
+        cR += 1;
+        continue;
+      }
+      if(board[r][cR] !== undefined && !board[r][cR].startsWith("w")){
+        UpRight.push([r, cR]);
         break;
       }
+      break;
     }
+    cR = col + 1;
+    //upleft
     let UpLeft: Array<number[]> = [];
-    for(let r = row; r >= 0; r--){
-      for(let c = col; c >= 0; c--){
-        if(boardCopy[r][c] === ""){
-          UpLeft.push([r, c])
-          continue;
-        }
-        if(!boardCopy[r][c].startsWith("w")){
-          UpLeft.push([r, c])
-          break;
-        }
+    for(let r = row - 1; r >= 0; r--){
+      if (cL > 7 || cL < 0) break;
+      if(board[r][cL] === ""){
+        UpLeft.push([r, cL]);
+        cL -= 1;
+        continue;
+      }
+      if(board[r][cL] !== undefined && !board[r][cL].startsWith("w")){
+        UpLeft.push([r, cL]);
         break;
       }
+      break;
     }
-    let downRight: Array<number[]> = [];
-    for(let r = row; r <= 7; r++){
-      for(let c = col; c <= 7; c++){
-        if(boardCopy[r][c] === ""){
-          downRight.push([r, c])
-          continue;
-        }
-        if(!boardCopy[r][c].startsWith("w")){
-          downRight.push([r, c])
-          break;
-        }
-        break;
-      }
-    }
-
+    cL = col - 1;
     let downLeft: Array<number[]> = [];
-    for(let r = row; r <= 7; r++){
-      for(let c = col; c >= 0; c--){
-        if(boardCopy[r][c] === ""){
-          downLeft.push([r, c])
-          continue;
-        }
-        if(!boardCopy[r][c].startsWith("w")){
-          downLeft.push([r, c])
-          break;
-        }
+    for(let r = row + 1; r <=7; r ++){
+      if (cL > 7 || cL < 0) break;
+      if(board[r][cL] === ""){
+        downLeft.push([r, cL]);
+        cL -= 1;
+        continue;
+      }
+      if(board[r][cL] !== undefined && !board[r][cL].startsWith("w")){
+        downLeft.push([r, cL]);
         break;
       }
-    }
-      possibleMoves = possibleMoves.concat(
-        UpRight,
-        UpLeft,
-        downLeft,
-        downRight
-      );
-      console.log(possibleMoves)
       break;
-    case "black":
+    }
+    cL = col - 1;
+    //down right
+    let downRight: Array<number[]> = [];
 
-    if(returnAttackingSquares){
-  const whiteKingPosition = FindAGivenPeice(boardCopy, "wking")
+    for(let r = row + 1; r <= 7; r ++){
+      if (cR > 7 || cR < 0) break;
+      if(board[r][cR] === ""){
+        downRight.push([r, cR])
+        cR += 1;
+        continue;
+      }
+      if(board[r][cR] !== undefined && !board[r][cR].startsWith("w")){
+        downRight.push([r, cR]);
+        break;
+      }
+      break;
+      
+    }
+    cR = col + 1;
+    possibleMoves = possibleMoves.concat(UpRight, UpLeft, downLeft, downRight)
+    break;
+  case "black":
+  if(returnAttackingSquares){
+    const whiteKingPosition = FindAGivenPeice(boardCopy, "wking")
+    
+    if(whiteKingPosition != null){
+      boardCopy = RemovePeiceAtPosition(boardCopy, whiteKingPosition);
+    }
+  }
+
+  //up right
+  let UpRightBlack: Array<number[]> = [];
+  let cLBlack = col - 1;
+  let cRBlack = col + 1;
+  for(let r = row - 1; r >= 0; r--){
+    if (cRBlack > 7 || cRBlack < 0) break;
+    if(boardCopy[r][cRBlack] === ""){
+      UpRightBlack.push([r, cRBlack])
+      cRBlack += 1;
+      continue;
+    }
+    if(boardCopy[r][cRBlack] !== undefined && boardCopy[r][cRBlack].startsWith("w")){
+      UpRightBlack.push([r, cRBlack]);
+      break;
+    }
+    break;
+  }
+  cRBlack = col + 1;
   
-  if(whiteKingPosition != null){
-    boardCopy = RemovePeiceAtPosition(boardCopy, whiteKingPosition);
-  }
-}
-
-    //up right
-    let UpRightBlack:Array<number[]> = [];
-    for(let r = row - 1; r >= 0; r--){
-      for(let c = col + 1; c <=7; c++){
-        if(boardCopy[r][c] === ""){
-          UpRightBlack.push([r, c]);
-          continue;
-        }
-        if(boardCopy[r][c].startsWith("w")){
-          UpRightBlack.push([r, c]);
-          break;
-        }
-        break;
-      }
+  //upleft
+  let UpLeftBlack: Array<number[]> = [];
+  for(let r = row - 1; r >= 0; r--){
+    if (cLBlack > 7 || cLBlack < 0) break;
+    if(boardCopy[r][cLBlack] === ""){
+      UpLeftBlack.push([r, cLBlack]);
+      cLBlack -= 1;
+      continue;
     }
-    let UpLeftBlack: Array<number[]> = [];
-    for(let r = row - 1; r >= 0; r--){
-      for(let c = col - 1; c >= 0; c--){
-        if(boardCopy[r][c] === ""){
-          UpLeftBlack.push([r, c])
-          continue;
-        }
-        if(boardCopy[r][c].startsWith("w")){
-          UpLeftBlack.push([r, c])
-          break;
-        }
-        break;
-      }
-    }
-    let downRightBlack: Array<number[]> = [];
-    for(let r = row + 1; r <= 7; r++){
-      for(let c = col + 1; c <= 7; c++){
-        if(boardCopy[r][c] === ""){
-          downRightBlack.push([r, c])
-          continue;
-        }
-        if(boardCopy[r][c].startsWith("w")){
-          downRightBlack.push([r, c])
-          break;
-        }
-        break;
-      }
-    }
-
-    let downLeftBlack: Array<number[]> = [];
-    for(let r = row + 1; r <= 7; r++){
-      for(let c = col - 1; c >= 0; c--){
-        if(boardCopy[r][c] === ""){
-          downLeftBlack.push([r, c])
-          continue;
-        }
-        if(boardCopy[r][c].startsWith("w")){
-          downLeftBlack.push([r, c])
-          break;
-        }
-        break;
-      }
-    }
-    possibleMoves = possibleMoves.concat(
-        UpRightBlack,
-        UpLeftBlack,
-        downLeftBlack,
-        downRightBlack
-      );
+    if(boardCopy[r][cLBlack] !== undefined && boardCopy[r][cLBlack].startsWith("w")){
+      UpLeftBlack.push([r, cLBlack]);
       break;
+    }
+    break;
+  }
+  cLBlack = col - 1;
+  
+  let downLeftBlack: Array<number[]> = [];
+  for(let r = row + 1; r <=7; r ++){
+    if (cLBlack > 7 || cLBlack < 0) break;
+    if(boardCopy[r][cLBlack] === ""){
+      downLeftBlack.push([r, cLBlack]);
+      cLBlack -= 1;
+      continue;
+    }
+    if(boardCopy[r][cLBlack] !== undefined && boardCopy[r][cLBlack].startsWith("w")){
+      downLeftBlack.push([r, cLBlack]);
+      break;
+    }
+    break;
+  }
+  cLBlack = col - 1;
+  
+  //down right
+  let downRightBlack: Array<number[]> = [];
+  for(let r = row + 1; r <= 7; r ++){
+    if (cRBlack > 7 || cRBlack < 0) break;
+    if(boardCopy[r][cRBlack] === ""){
+      downRightBlack.push([r, cRBlack])
+      cRBlack += 1;
+      continue;
+    }
+    if(boardCopy[r][cRBlack] !== undefined && boardCopy[r][cRBlack].startsWith("w")){
+      downRightBlack.push([r, cRBlack]);
+      break;
+    }
+    break;
+  }
+  cRBlack = col + 1;
+  
+  possibleMoves = possibleMoves.concat(UpRightBlack, UpLeftBlack, downLeftBlack, downRightBlack);
+  break;
   }
 
+
+    
   return possibleMoves;
 };
 export const getPossibleRookMoves = (
