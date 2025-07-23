@@ -53,7 +53,6 @@ const Home = () => {
 
   const [pawnPromotion, setPawnPromotion] = useState<string>("");
 
-  const [animatingPiece, setAnimatingPiece] = useState<string | null>(null);
   const [animationInProgress, setAnimationInProgress] = useState<boolean>(false);
 
   const HandlePromotion = (peiceType: string) => {
