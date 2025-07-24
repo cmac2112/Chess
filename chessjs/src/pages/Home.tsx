@@ -204,7 +204,9 @@ const Home = () => {
     row: number,
     col: number
   ) => {
-    
+    if(startModalOpen || difficultyModal){
+      return;
+    }
     if (selected.peice == "" && selected.team == "") {
       switch (peice){
         case "wpawn":
@@ -446,8 +448,9 @@ const Home = () => {
     setDifficultyModal(true);
   }
   const HandleSetDifficulty = (diff: string) => {
-setDifficultySelect(diff);
-setSingleplayer(true)
+  setDifficultySelect(diff);
+  setSingleplayer(true)
+  setDifficultyModal(false);
   }
   const HandleMultiplayer = () =>{
     setSingleplayer(false);
@@ -498,8 +501,8 @@ setSingleplayer(true)
         <h2 className="pawn-promotion-header">Start Menu</h2>
       </div>
       <div className="pawn-promotion-list">
-        <button className="promotion-button" onClick={() => HandleDifficultyModal}>Singleplayer</button>
-        <button className="promotion-button" onClick={() => HandleMultiplayer}>Multiplayer</button>
+        <button className="promotion-button" onClick={() => HandleDifficultyModal()}>Singleplayer</button>
+        <button className="promotion-button" onClick={() => HandleMultiplayer()}>Multiplayer</button>
 
       </div>
     </div> : <></>}
