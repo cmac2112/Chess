@@ -1,8 +1,8 @@
-import { useState, useRef} from "react";
+import { useState, useRef, useEffect} from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "../Utilities/moves";
 import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, ValidMoveCheckForCheck, GetPossibleMovesForAPeiceAtAPosition, SimulateMovesFromAnArray } from "../Utilities/Utilities";
-
+import { HandleAICalculation } from "../Utilities/AICalculation";
 const Home = () => {
   const [selected, setSelected] = useState({
     peice: "",
@@ -83,6 +83,13 @@ const Home = () => {
       TurnEndCheckForCheck(promotionBoard);
       CheckForMate(promotionBoard, !turn)
   }
+
+  useEffect(() => {
+    if(singleplayer && turn){
+      console.log("blacks turn", turn)
+      const aiMove = HandleAICalculation(playingBoard, difficultySelect)
+    }
+  }, [turn])
   const HandleTurnChange = (newBoard: Array<string[]>) =>{
         setPlayingBoard(newBoard); 
         setSelected({ peice: "", team: "", row: -1, col: -1 });
@@ -99,6 +106,7 @@ const Home = () => {
         }
         setTurn(!turn)
         setMessage("");
+
         return;
   }
 
@@ -374,7 +382,7 @@ const Home = () => {
     if (!startBox || !destinationBox) {
       const originalPiece = startBox?.querySelector('.peice') || startBox?.querySelector('img');
       if (originalPiece) {
-        originalPiece.style.visibility = 'visible';
+        (originalPiece as HTMLElement).style.visibility = 'visible';
       }
       onComplete();
       return;
