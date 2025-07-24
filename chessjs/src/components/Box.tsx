@@ -21,6 +21,7 @@ const Box: React.FC<BoxProps> = ({
     row,
     col,
     boxColor
+
 }) => {
   const [imagePath, setImagePath] = React.useState<string>('');
 
@@ -54,6 +55,7 @@ const Box: React.FC<BoxProps> = ({
         src={imagePath}
         alt="peice"
         className="peice"
+        
   />
       )}
     </div>
