@@ -87,10 +87,20 @@ const Home = () => {
   useEffect(() => {
     if(singleplayer && turn){
       console.log("blacks turn", turn)
+      
       const aiMove: AIMove | null = HandleAICalculation(playingBoard, difficultySelect)
-      console.log('ais move', aiMove)
+
+      if (aiMove) {
+        const newBoard = playingBoard.map(row => [...row]);
+        newBoard[aiMove.fromRow][aiMove.fromCol] = "";
+        newBoard[aiMove.toRow][aiMove.toCol] = aiMove.piece;
+        console.log('ais move', aiMove);
+        HandleMoveAnimation(aiMove.fromRow, aiMove.fromCol, aiMove.toRow, aiMove.toCol, () => HandleTurnChange(newBoard));
+      }
     }
   }, [turn])
+
+
   const HandleTurnChange = (newBoard: Array<string[]>) =>{
         setPlayingBoard(newBoard); 
         setSelected({ peice: "", team: "", row: -1, col: -1 });
@@ -315,7 +325,7 @@ const Home = () => {
             return;
           }
         }
-      HandleMoveAnimation(selected.peice, selected.row, selected.col, row, col, ()=> HandleTurnChange(newBoard))
+      HandleMoveAnimation(selected.row, selected.col, row, col, ()=> HandleTurnChange(newBoard))
       } 
     }
     }else{
@@ -361,7 +371,7 @@ const Home = () => {
           }
         }
 
-        HandleMoveAnimation(selected.peice, selected.row, selected.col, row, col, () => HandleTurnChange(newBoard))
+        HandleMoveAnimation(selected.row, selected.col, row, col, () => HandleTurnChange(newBoard))
         }else{
           return;
         }
@@ -370,7 +380,6 @@ const Home = () => {
   };
 
   const HandleMoveAnimation = (
-    peice: string,
     startRow: number,
     startCol: number,
     destinationRow: number,
