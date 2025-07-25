@@ -2,7 +2,7 @@ import { useState, useRef, useEffect} from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "../Utilities/moves";
 import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, ValidMoveCheckForCheck, GetPossibleMovesForAPeiceAtAPosition, SimulateMovesFromAnArray } from "../Utilities/Utilities";
-import { HandleAICalculation } from "../Utilities/AICalculation";
+import { AIMove, HandleAICalculation } from "../Utilities/AICalculation";
 const Home = () => {
   const [selected, setSelected] = useState({
     peice: "",
@@ -28,8 +28,8 @@ const Home = () => {
   
   const [playingBoard, setPlayingBoard] = useState<string[][]>([
     
-    ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
-    ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
+    ["", "", "", "king", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
@@ -87,7 +87,8 @@ const Home = () => {
   useEffect(() => {
     if(singleplayer && turn){
       console.log("blacks turn", turn)
-      const aiMove = HandleAICalculation(playingBoard, difficultySelect)
+      const aiMove: AIMove | null = HandleAICalculation(playingBoard, difficultySelect)
+      console.log('ais move', aiMove)
     }
   }, [turn])
   const HandleTurnChange = (newBoard: Array<string[]>) =>{

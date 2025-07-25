@@ -206,6 +206,8 @@ export const PeiceAtGivenPosition = (board: Array<string[]>, peicePositionRow: n
 }
 
 //returns just the move array for a given peice at a position, will be used in the check and checkmate blocking funtionality
+
+//todo lets iterate on this and have it return an object called Move which also returns the piece type
 export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, peicePositionRow: number, peicePositionCol: number, team: string): number[][] => {
 
   let moves: number[][] = [];
