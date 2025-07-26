@@ -84,48 +84,40 @@ const CalculateHighestPointValueAiCanReachEasy = (board: Array<string[]>, pointB
     // since this is the first iteration of this lets just loop through
     // all pieces and move the first one we find
 
-    const blackPiecePositions: { row: number, col: number, piece: string }[] = [];
-    for (let r = 0; r < board.length; r++) {
-      for (let c = 0; c < board[0].length; c++) {
-        const pieceAtPos = PeiceAtGivenPosition(board, r, c);
-        if (pieceAtPos && pieceAtPos.startsWith("black")) {
-          blackPiecePositions.push({ row: r, col: c, piece: pieceAtPos });
+    for(let r = 0; r < board.length; r++){
+      for(let c = 0; c < board[0].length; c++){
+        const pieceAtPos = board[r][c]
+        const pieceMoves = GetPossibleMovesForAPeiceAtAPosition(board, r, c, "black", true)
+
+        console.log("i want to move to", maxRow, maxCol)
+        if(IsMoveArrayInGivenArray([maxRow, maxCol], pieceMoves)){
+          console.log('max point move found')
+          return {
+            fromRow: r,
+            fromCol: c,
+            toRow: maxRow,
+            toCol: maxCol,
+            piece: pieceAtPos,
+            score: 0,
+            noMovesFound: false,
+          }
         }
+        console.log('max point move not found for piece', pieceAtPos)
       }
-    }
-    // Iterate over black pieces only
-    for (const { row, col, piece } of blackPiecePositions) {
-      const pieceMoves = GetPossibleMovesForAPeiceAtAPosition(board, row, col, "black");
-      
-      console.log('checking piece at position', piece, row, col);
-      console.log('its possible moves', pieceMoves);
-      if (IsMoveArrayInGivenArray([maxRow, maxCol], pieceMoves)) {
-        console.log('max point move found');
-        return {
-          fromRow: row,
-          fromCol: col,
-          toRow: maxRow,
-          toCol: maxCol,
-          piece: piece,
-          score: 0,
-          noMovesFound: false,
-        };
-      }
-      console.log('max point move not found for piece', piece);
-    
     }
   }
   console.log(maxPoint);
+
   }
-    return {
-        fromRow: 1,
-        fromCol: 1,
-        toRow: 1,
-        toCol: 1,
-        piece: "pawn",
-        score: 15,
-        noMovesFound: false,
-    };
+    return{
+        fromRow: 0,
+        fromCol: 0,
+        toRow: 0,
+        toCol: 0,
+        piece: "",
+        score: 0,
+        noMovesFound: true
+      }
 }
 const CalculateFavorableMoveEasy = (board: Array<string[]>): AIMove => {
     let defaultPointsBoard: number[][] = [
@@ -165,22 +157,22 @@ const CalculateFavorableMoveEasy = (board: Array<string[]>): AIMove => {
                             defaultPointsBoard[r][c] += 12
                           break;
                         case "pawn":
-                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
+                            defaultPointsBoard[r][c] -= 1000
                           break;
                         case "knight":
-                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
+                            defaultPointsBoard[r][c] -= 1000
                           break;
                         case "rook":
-                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
+                            defaultPointsBoard[r][c] -= 1000
                           break;
                         case "bishop":
-                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
+                            defaultPointsBoard[r][c] -= 1000
                           break;
                         case "king":
-                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
+                            defaultPointsBoard[r][c] -= 1000
                           break;
                         case "queen":
-                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
+                            defaultPointsBoard[r][c] -= 1000
                           break;
             }
         }

@@ -144,8 +144,9 @@ export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string,
                 // the ai does not need to add the pawn attacks to its move array, it should only do that if there is an opposing piece there
                 if(Ai){
                   possibleMoves = possibleMoves.concat(getPossiblePawnMoves(i, k, team, board))
-                }
+                }else{
                 possibleMoves = possibleMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, team));
+                }
                 break;
               case "knight":
                 possibleMoves = possibleMoves.concat(getPossibleKnightMoves(i, k, team, board));
@@ -205,6 +206,8 @@ export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string,
 
 // this method will return the peice at a given position passed to it
 // probably could have just done this in the method itself but this makes things more readable
+
+// wait why did i do this i literaly dont know why when i could just do board[r][c] bruh
 export const PeiceAtGivenPosition = (board: Array<string[]>, peicePositionRow: number, peicePositionCol: number): string =>{
   return board[peicePositionRow][peicePositionCol];
 }
@@ -224,8 +227,9 @@ export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, pei
               case "pawn":
                 if(Ai){
                   moves = getPossiblePawnMoves(peicePositionRow, peicePositionCol, team, board);
-                }
+                }else{
                 moves = getPawnAttacksForKingMoveCalculation(peicePositionRow, peicePositionCol, team);
+                }
                 break;
               case "knight":
                 moves = moves.concat(getPossibleKnightMoves(peicePositionRow, peicePositionCol, team, board));
