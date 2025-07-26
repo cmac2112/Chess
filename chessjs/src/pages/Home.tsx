@@ -584,17 +584,46 @@ const Home = () => {
     </div> : <></>}
 
     {difficultyModal ? 
-    <div className="pawn-promotion-menu-container">
-      <div className="pawn-promotion-header-container">
-        <h2 className="pawn-promotion-header">Start Menu</h2>
+<div className="pawn-promotion-menu-container">
+  <div className="pawn-promotion-header-container">
+    <h2 className="pawn-promotion-header">Start Menu</h2>
+  </div>
+  <div className="difficulty-selection-container">
+    <div className="difficulty-option">
+      <button className="promotion-button" onClick={() => HandleSetDifficulty("easy")}>Easy</button>
+      <div className="description-column">
+        <p>Very aggressive</p>
+        <p>Unable to simulate moves ahead</p>
       </div>
-      <div className="pawn-promotion-list">
-        <button className="promotion-button" onClick={() => HandleSetDifficulty("easy")}>Easy</button>
-        
-
-
+    </div>
+    <div className="difficulty-option">
+      <button className="promotion-button" onClick={() => HandleSetDifficulty("medium")} disabled>Medium</button>
+      <div className="description-column">
+        <p>Balanced approach</p>
+        <p>Considers multiple moves</p>
       </div>
-    </div> : <></>}
+    </div>
+    <div className="difficulty-option">
+      <button className="promotion-button" onClick={() => HandleSetDifficulty("hard")} disabled>Hard</button>
+      <div className="description-column">
+        <p>Strategic planning</p>
+        <p>Advanced calculations</p>
+      </div>
+    </div>
+    <div className="difficulty-option">
+      <button className="promotion-button" onClick={() => HandleSetDifficulty("grandmaster")} disabled >Grand Master</button>
+      <div className="description-column">
+        <p>Master level play</p>
+        <p>Deep analysis</p>
+      </div>
+    </div>
+  </div>
+  <div className="extra-info-conatiner">
+    <div className="pawn-promotion-header-container">
+    <h2 className="pawn-promotion-header">Learn how the AI's Work on my <a href="https://github.com/cmac2112/Chess/wiki/How-The-AI's-Work">Github</a></h2>
+    </div>
+  </div>
+</div> : <></>}
     </div>
   );
 };

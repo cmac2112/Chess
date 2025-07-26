@@ -1,5 +1,5 @@
 //file for holding useful utilities to do things for the game that have no other place
-import {getPawnAttacksForKingMoveCalculation, getPossibleBishopMoves, getPossibleKingMoves, getPossibleKnightMoves, getPossibleQueenMoves, getPossibleRookMoves } from "./moves";
+import {getPawnAttacksForKingMoveCalculation, getPossibleBishopMoves, getPossibleKingMoves, getPossibleKnightMoves, getPossiblePawnMoves, getPossibleQueenMoves, getPossibleRookMoves } from "./moves";
 
 //this method should return some sort of indicator to let the program know if it found any possible move where the king is no longer in check
 export const SimulateMovesFromAnArray = (initialBoard: Array<string[]>, peicePositionRow: number, peicePositionCol: number, peicePossibleMoves: number[][], team: string): boolean => {
@@ -124,7 +124,7 @@ export const GetAllPossiblePawnMovesForTeam =(board: Array<string[]>, team: stri
 }
 
 /// This method will give all of the possible moves of a team based on the position of the board given
-export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string): number[][] => {
+export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string, Ai: boolean = false): number[][] => {
     let possibleMoves: number[][] = []
 
     for(let i = 0; i < 8; i ++){
@@ -141,6 +141,10 @@ export const GetAllPossibleMovesForTeam = (board: Array<string[]>, team: string)
               case "":
               break;
               case "pawn":
+                // the ai does not need to add the pawn attacks to its move array, it should only do that if there is an opposing piece there
+                if(Ai){
+                  possibleMoves = possibleMoves.concat(getPossiblePawnMoves(i, k, team, board))
+                }
                 possibleMoves = possibleMoves.concat(getPawnAttacksForKingMoveCalculation(i, k, team));
                 break;
               case "knight":
@@ -208,7 +212,7 @@ export const PeiceAtGivenPosition = (board: Array<string[]>, peicePositionRow: n
 //returns just the move array for a given peice at a position, will be used in the check and checkmate blocking funtionality
 
 //todo lets iterate on this and have it return an object called Move which also returns the piece type
-export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, peicePositionRow: number, peicePositionCol: number, team: string): number[][] => {
+export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, peicePositionRow: number, peicePositionCol: number, team: string, Ai: boolean = false): number[][] => {
 
   let moves: number[][] = [];
 
@@ -218,6 +222,9 @@ export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, pei
               case "":
               break;
               case "pawn":
+                if(Ai){
+                  moves = getPossiblePawnMoves(peicePositionRow, peicePositionCol, team, board);
+                }
                 moves = getPawnAttacksForKingMoveCalculation(peicePositionRow, peicePositionCol, team);
                 break;
               case "knight":

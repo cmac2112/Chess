@@ -8,9 +8,6 @@ export const getPossiblePawnMoves = (
 ): number[][] => {
   //calculate moves based off of the current position, make sure moves are not invalid and off of the board,
   // if the pawn is not in its starting position do not allow it to move two spaces
-
-  //pawn promotions later here
-
   //wont worry about enpessants for now because i dont even know what they are
 
   let possibleMoves: Array<number[]> = [];

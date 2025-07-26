@@ -19,7 +19,7 @@ export interface AIMove{
 //ai will return [[piece_X, piece_y], [movedPiece_x, movedPiece_y]]
 // it will choose the piece's position it wants to move, and chooses its ending spot
 export const HandleAICalculation = (board: Array<string[]>, difficulty: string | null): AIMove | null =>{
-    if(difficulty == "easy"){
+    if(difficulty === "easy"){
        return CalculateFavorableMoveEasy(board)
     }
 
@@ -51,7 +51,7 @@ const CalculateHighestPointValueAiCanReachEasy = (board: Array<string[]>, pointB
       }
     }
   }
-  const possibleAIMoves: number[][] = GetAllPossibleMovesForTeam(board, "black");
+  const possibleAIMoves: number[][] = GetAllPossibleMovesForTeam(board, "black", true);
   console.log(possibleAIMoves)
   const canAiMoveToMaxPointCurrently: boolean = IsMoveArrayInGivenArray([maxRow, maxCol], possibleAIMoves);
   // this is not going to work, because there are multiple instances of the same number
@@ -84,27 +84,35 @@ const CalculateHighestPointValueAiCanReachEasy = (board: Array<string[]>, pointB
     // since this is the first iteration of this lets just loop through
     // all pieces and move the first one we find
 
-    for(let r = 0; r < board.length; r++){
-      for(let c = 0; c < board[0].length; c++){
+    const blackPiecePositions: { row: number, col: number, piece: string }[] = [];
+    for (let r = 0; r < board.length; r++) {
+      for (let c = 0; c < board[0].length; c++) {
         const pieceAtPos = PeiceAtGivenPosition(board, r, c);
-        const pieceMoves = GetPossibleMovesForAPeiceAtAPosition(board, r, c, "black")
-        
-        console.log('checking piece at position', pieceAtPos, r, c)
-        console.log('its possible moves', pieceMoves);
-        if(IsMoveArrayInGivenArray([maxRow, maxCol], pieceMoves)){
-          console.log('max point move found')
-          return {
-            fromRow: r,
-            fromCol: c,
-            toRow: maxRow,
-            toCol: maxCol,
-            piece: pieceAtPos,
-            score: 0,
-            noMovesFound: false,
-          }
+        if (pieceAtPos && pieceAtPos.startsWith("black")) {
+          blackPiecePositions.push({ row: r, col: c, piece: pieceAtPos });
         }
-        console.log('max point move not found for piece', pieceAtPos)
       }
+    }
+    // Iterate over black pieces only
+    for (const { row, col, piece } of blackPiecePositions) {
+      const pieceMoves = GetPossibleMovesForAPeiceAtAPosition(board, row, col, "black");
+      
+      console.log('checking piece at position', piece, row, col);
+      console.log('its possible moves', pieceMoves);
+      if (IsMoveArrayInGivenArray([maxRow, maxCol], pieceMoves)) {
+        console.log('max point move found');
+        return {
+          fromRow: row,
+          fromCol: col,
+          toRow: maxRow,
+          toCol: maxCol,
+          piece: piece,
+          score: 0,
+          noMovesFound: false,
+        };
+      }
+      console.log('max point move not found for piece', piece);
+    
     }
   }
   console.log(maxPoint);
@@ -137,7 +145,6 @@ const CalculateFavorableMoveEasy = (board: Array<string[]>): AIMove => {
     for(let r = 0; r < board.length; r++){
         for(let c = 0; c < board[0].length; c++){
             const piece = PeiceAtGivenPosition(board, r, c);
-            console.log(piece)
             switch(piece){
                  case "wpawn":
                         defaultPointsBoard[r][c] += 3
@@ -182,6 +189,5 @@ const CalculateFavorableMoveEasy = (board: Array<string[]>): AIMove => {
 
     //iterate throughthe board, assign default points 
     console.log(defaultPointsBoard)
-    console.log(board);
     return CalculateHighestPointValueAiCanReachEasy(board, defaultPointsBoard)
 }
