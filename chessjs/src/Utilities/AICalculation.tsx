@@ -158,22 +158,22 @@ const CalculateFavorableMoveEasy = (board: Array<string[]>): AIMove => {
                             defaultPointsBoard[r][c] += 12
                           break;
                         case "pawn":
-                            defaultPointsBoard[r][c] -= 1000
+                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
                           break;
                         case "knight":
-                            defaultPointsBoard[r][c] -= 1000
+                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
                           break;
                         case "rook":
-                            defaultPointsBoard[r][c] -= 1000
+                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
                           break;
                         case "bishop":
-                            defaultPointsBoard[r][c] -= 1000
+                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
                           break;
                         case "king":
-                            defaultPointsBoard[r][c] -= 1000
+                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
                           break;
                         case "queen":
-                            defaultPointsBoard[r][c] -= 1000
+                            defaultPointsBoard[r][c] += AI_PIECE_PENALTY
                           break;
             }
         }
