@@ -222,8 +222,6 @@ export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, pei
   let peice = board[peicePositionRow][peicePositionCol]
   if(team == "black"){
           switch(peice){
-              case "":
-              break;
               case "pawn":
                 if(Ai){
                   moves = getPossiblePawnMoves(peicePositionRow, peicePositionCol, team, board);
@@ -252,10 +250,7 @@ export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, pei
               
           }
         }else{
-
           switch(peice){
-            case "":
-              break;
               case "wpawn":
                 moves = getPawnAttacksForKingMoveCalculation(peicePositionRow, peicePositionCol, team);
                 break;
@@ -282,6 +277,7 @@ export const GetPossibleMovesForAPeiceAtAPosition = (board: Array<string[]>, pei
       return moves;
 }
 
+// checks to see if a king is in check after a valid move has been played
 export const ValidMoveCheckForCheck = (board: Array<string[]>, targetingTeam: string):boolean => {
 
   let result:boolean = false;
@@ -296,6 +292,7 @@ export const ValidMoveCheckForCheck = (board: Array<string[]>, targetingTeam: st
     }
   }
   if(targetingTeam == "white"){
+    console.log(board);
     const blackKingPosition = FindAGivenPeice(board, "king");
     const whiteTeamMovesNextTurn = GetAllPossibleMovesForTeam(board, "white");
     if(blackKingPosition != null){

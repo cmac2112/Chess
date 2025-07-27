@@ -28,23 +28,25 @@ const Home = () => {
   
   const [playingBoard, setPlayingBoard] = useState<string[][]>([
     
-    ["", "", "", "king", "", "", "", ""],
+    ["", "", "wqueen", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "king", "rook", "", "", "", "wrook", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
-    ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
+    ["","","wqueen","","wking","","","",],
   ]);
 
   //false = white turn
   //true = black turn
-  const [turn, setTurn] = useState<boolean>(false);
+  const [turn, setTurn] = useState<boolean | null>(null);
 
   const [confirm, setConfirm] = useState<boolean>(false);
 
   const [winner, setWinner] = useState<string>("");
+
+  const [staleMate, setStaleMate] = useState<boolean>(false);
 
   const whiteCheck = useRef<boolean>(false);
   const blackCheck = useRef<boolean>(false); 
@@ -89,13 +91,16 @@ const Home = () => {
       console.log("blacks turn", turn)
       
       const aiMove: AIMove | null = HandleAICalculation(playingBoard, difficultySelect)
-
+      const newBoard = playingBoard.map(row => [...row]);
       if (aiMove) {
-        const newBoard = playingBoard.map(row => [...row]);
+        
         newBoard[aiMove.fromRow][aiMove.fromCol] = "";
         newBoard[aiMove.toRow][aiMove.toCol] = aiMove.piece;
         console.log('ais move', aiMove);
         HandleMoveAnimation(aiMove.fromRow, aiMove.fromCol, aiMove.toRow, aiMove.toCol, () => HandleTurnChange(newBoard));
+      }else{
+        CheckForMate(newBoard, turn)
+        setStaleMate(true);
       }
     }
   }, [turn])
@@ -113,7 +118,9 @@ const Home = () => {
 
         if(!boardPromotion){
           TurnEndCheckForCheck(newBoard);
+          if(turn != null){
           CheckForMate(newBoard, turn)
+          }
         }
         setTurn(!turn)
         setMessage("");
@@ -164,6 +171,7 @@ const Home = () => {
     } 
   }
   
+  //using team as boolean and strings throughout the program is making things confusing, noting this down for future refactoring
   const CheckForMate = (board: Array<string[]>, team: boolean) =>{  
     if(team){
     for(let i = 0; i < board.length; i++){
@@ -177,7 +185,13 @@ const Home = () => {
         }
       }
     }
+    if(whiteCheck.current){
     setWinner("Black")
+    setTurn(null)
+    }else{
+      setStaleMate(true);
+      setTurn(null);
+    }
   }else{
     for(let i = 0; i < board.length; i++){
       for(let k = 0; k < board[i].length; k++){
@@ -190,7 +204,14 @@ const Home = () => {
         }
       }
     }
+    if(blackCheck.current){
     setWinner("White");
+    setTurn(null);
+    }else{
+      setStaleMate(true)
+      setTurn(null)
+    }
+
   }
 
   }
@@ -202,9 +223,10 @@ const Home = () => {
       }
       setConfirm(true)
     }else{
-      setPlayingBoard(startingPositions)
-      setConfirm(false)
-      setTurn(false)
+      setPlayingBoard(startingPositions);
+      setConfirm(false);
+      setTurn(null);
+      setStaleMate(false);
       setWinner("");
       whiteCheck.current = false;
       blackCheck.current = false;
@@ -225,9 +247,10 @@ const Home = () => {
     row: number,
     col: number
   ) => {
-    if(startModalOpen || difficultyModal){
+    if(startModalOpen || difficultyModal || winner != ""){
       return;
     }
+ 
     if (selected.peice == "" && selected.team == "") {
       switch (peice){
         case "wpawn":
@@ -275,6 +298,9 @@ const Home = () => {
       if(turn && peice.startsWith("w")){
         return
       }
+      if(turn == null){
+        return;
+      }
 
       setSelected({ peice, team, row, col });
       HighlightPossibleMoves(possibleMoves.current);
@@ -302,6 +328,7 @@ const Home = () => {
       newBoard[selected.row][selected.col] = ""
       newBoard[row][col] = selected.peice
 
+      
 
       //could in the future possibly refactor this repeated code down into its own module
       if(!turn && whiteCheck.current){
@@ -326,7 +353,8 @@ const Home = () => {
           }
         }
       HandleMoveAnimation(selected.row, selected.col, row, col, ()=> HandleTurnChange(newBoard))
-      } 
+      }
+      
     }
     }else{
       //handle normal move no capture
@@ -342,33 +370,22 @@ const Home = () => {
         newBoard[row][col] = selected.peice; //copy the peice to the new board at the selected location
         newBoard[selected.row][selected.col] = ""; //remove the peice from the old location
 
-        //now check the newboard to see iff a king is in check for the team and if it blocks the check for them, if it does not we do not update the board or flip the turn we just reset
+        //now check the newboard to see iff a king is in check for the team and if it blocks the check for them,
+        // if it does not we do not update the board or flip the turn we just reset
         
-        if(!turn){
-          let result = ValidMoveCheckForCheck(newBoard, "black");
-          if(result){
-            setPlayingBoard(playingBoard)
-            if(!whiteCheck.current){
-            setMessage("Your king would be in check")
-            }
-            setSelected({ peice: "", team: "", row: -1, col: -1 })
-            ClearHighlights();
+
+        // itegrate this part of the equation into the ai so it removes moves that would put its king in check
+        let result = ValidMoveCheckForCheck(newBoard, (turn ? "white" : "black"));
+        if(result){
+          const message = "Your King would be exposed!"
+          setPlayingBoard(playingBoard);
+          setSelected({ peice: "", team: "", row: -1, col: -1 });
+          if((!whiteCheck.current && !turn) || (!blackCheck.current && turn)){
+            setMessage(message)
+          }
+          ClearHighlights();
             HandleFlash();
             return;
-          }
-        }
-        if(turn){
-          let result = ValidMoveCheckForCheck(newBoard, "white");
-          if(result){
-            setPlayingBoard(playingBoard)
-            setSelected({ peice: "", team: "", row: -1, col: -1 })
-            if(!blackCheck.current){
-            setMessage("Your king would be in check")
-            }
-            ClearHighlights();
-            HandleFlash();
-            return;
-          }
         }
 
         HandleMoveAnimation(selected.row, selected.col, row, col, () => HandleTurnChange(newBoard))
@@ -527,8 +544,10 @@ const Home = () => {
   setDifficultySelect(diff);
   setSingleplayer(true)
   setDifficultyModal(false);
+  setTurn(false);
   }
   const HandleMultiplayer = () =>{
+    setTurn(false);
     setSingleplayer(false);
     setStartModalOpen(false);
   }
@@ -553,6 +572,10 @@ const Home = () => {
         {winner != "" ? 
         <div className="winner-box">
         <p className="winner-text">Checkmate: {winner} team wins!</p>
+     </div> : <></>}
+     {staleMate ? 
+        <div className="winner-box">
+        <p className="winner-text">Stalemate</p>
      </div> : <></>}
 
      

@@ -69,6 +69,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 5px;
+
 }
 .turn-indicator{
   font-family: Arial, Helvetica, sans-serif;
@@ -86,21 +87,29 @@
   font-size: small;
   text-align: center;
   border-radius: 2rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .check-warning{
-  padding-inline: 1rem;
+  padding: 5px;
 }
 .winner-box{
+  min-width: 7rem;
+  min-height: 7rem;
   position: absolute;
   background-color: #f2ca5c;
   border-radius: 1rem;
-
+  border: 1px solid grey;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  align-items: center;
+  justify-content: center;
+  display: flex;
   
 }
 .winner-text{
   padding: 0.5rem;
   color: white;
+  justify-content: center;
 }
 
 .flash{
@@ -219,5 +228,9 @@
   }
   .peice{
     height: 40px;
+  }
+  .info-bar{
+    max-width: 20rem;
+  min-height: 5rem;
   }
 }

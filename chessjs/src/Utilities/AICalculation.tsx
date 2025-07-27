@@ -1,7 +1,7 @@
 //main method to handle calculation game should only call this method, 
 // similar to a Iservice from c#
 
-import { GetAllPossibleMovesForTeam, GetPossibleMovesForAPeiceAtAPosition, IsMoveArrayInGivenArray, PeiceAtGivenPosition } from "./Utilities";
+import { GetAllPossibleMovesForTeam, GetPossibleMovesForAPeiceAtAPosition, IsMoveArrayInGivenArray, PeiceAtGivenPosition, ValidMoveCheckForCheck } from "./Utilities";
 
 //ai will always play team black
 
@@ -25,7 +25,7 @@ export const HandleAICalculation = (board: Array<string[]>, difficulty: string |
 
     return null;
 }
-const CalculateHighestPointValueAiCanReachEasy = (board: Array<string[]>, pointBoard: Array<number[]>): AIMove => {
+const CalculateHighestPointValueAiCanReachEasy = (board: Array<string[]>, pointBoard: (number | null)[][]): AIMove => {
     
   
   //find the max value of the board, continually iterate to see if a piece from the ai's team can reach it
@@ -36,7 +36,7 @@ const CalculateHighestPointValueAiCanReachEasy = (board: Array<string[]>, pointB
   console.log(flatPoints)
   console.log(pointBoard)
   while(flatPoints.length > 0){
-  const maxPoint = Math.max(...flatPoints);
+  const maxPoint = Math.max(...flatPoints.filter((v): v is number => v !== null));
   console.log(maxPoint)
 
   // Find the row and column index of the max point
@@ -92,6 +92,28 @@ const CalculateHighestPointValueAiCanReachEasy = (board: Array<string[]>, pointB
         console.log("i want to move to", maxRow, maxCol)
         if(IsMoveArrayInGivenArray([maxRow, maxCol], pieceMoves)){
           console.log('max point move found')
+
+
+          const boardCopy = board.map(row => [...row]);
+          boardCopy[r][c] = "";
+          boardCopy[maxRow][maxCol] = pieceAtPos;
+          console.log(pointBoard)
+          console.log(board)
+          console.log(boardCopy)
+          let exposedKing = ValidMoveCheckForCheck(boardCopy, "white")
+          console.log("king is exposed", exposedKing)
+          if(exposedKing){
+            console.log("move found but it would expose my king")
+            //move would lose the game for ai
+            //break this iteration and contiue to look for another move
+            const index = flatPoints.indexOf(maxPoint);
+            if (index > -1) {
+              flatPoints.splice(index, 1);
+              console.log(flatPoints)
+              pointBoard[maxRow][maxCol] = -99999
+              continue;
+            }
+          }
           return {
             fromRow: r,
             fromCol: c,
@@ -131,55 +153,72 @@ const CalculateFavorableMoveEasy = (board: Array<string[]>): AIMove => {
         [1,1,1,1,1,1,1,1],
     ]
 
-    //lol this is going to take a lot of tuning and research
-    // i can already see how this is going to behave
+
 
     for(let r = 0; r < board.length; r++){
         for(let c = 0; c < board[0].length; c++){
-            const piece = PeiceAtGivenPosition(board, r, c);
-            switch(piece){
-                 case "wpawn":
-                        defaultPointsBoard[r][c] += 3
-                          break;
-                        case "wrook":
-                            defaultPointsBoard[r][c] += 7
-                          break;
-                        case "wbishop":
-                            defaultPointsBoard[r][c] += 7
-                          break;
-                        case "wknight":
-                            defaultPointsBoard[r][c] += 6
-                          break;
-                        case "wking":
-                            defaultPointsBoard[r][c] -= 100
-                          break;
-                        case "wqueen":
-                            defaultPointsBoard[r][c] += 12
-                          break;
-                        case "pawn":
-                            defaultPointsBoard[r][c] -= 1000
-                          break;
-                        case "knight":
-                            defaultPointsBoard[r][c] -= 1000
-                          break;
-                        case "rook":
-                            defaultPointsBoard[r][c] -= 1000
-                          break;
-                        case "bishop":
-                            defaultPointsBoard[r][c] -= 1000
-                          break;
-                        case "king":
-                            defaultPointsBoard[r][c] -= 1000
-                          break;
-                        case "queen":
-                            defaultPointsBoard[r][c] -= 1000
-                          break;
+            if(board[r][c].startsWith("w")){
+                defaultPointsBoard[r][c] = GetPieceValue(board[r][c]) + (defaultPointsBoard[r][c] || 0);
             }
         }
     }
-    
 
-    //iterate throughthe board, assign default points 
-    console.log(defaultPointsBoard)
-    return CalculateHighestPointValueAiCanReachEasy(board, defaultPointsBoard)
+    // FILTER OUT DANGEROUS MOVES FIRST
+    const safePointsBoard = FilterSafeMoves(board, defaultPointsBoard);
+
+    return CalculateHighestPointValueAiCanReachEasy(board, safePointsBoard);
+}
+const GetPieceValue = (piece: string): number => {
+  // Standard chess piece values
+  switch(piece.toLowerCase().replace('w', '')) {
+    case 'pawn':
+      return 10;
+    case 'knight':
+      return 30;
+    case 'bishop':
+      return 30;
+    case 'rook':
+      return 50;
+    case 'queen':
+      return 90;
+    case 'king':
+      return 1000; 
+    default:
+      return 0;
+  }
+}
+
+const FilterSafeMoves = (board: Array<string[]>, pointBoard: (number | null)[][]): (number | null)[][] => {
+  const safeBoardCopy = pointBoard.map(row => [...row]); // Deep copy
+  
+  // Get all possible AI moves
+  for(let fromRow = 0; fromRow < board.length; fromRow++){
+    for(let fromCol = 0; fromCol < board[0].length; fromCol++){
+      const piece = board[fromRow][fromCol];
+      
+      // Only check black pieces (AI pieces)
+      if(!piece.startsWith("w") && piece !== ""){
+        const pieceMoves = GetPossibleMovesForAPeiceAtAPosition(board, fromRow, fromCol, "black", true);
+        
+        // Check each possible move for this piece
+        pieceMoves.forEach(([toRow, toCol]) => {
+          // Simulate the move
+          const boardCopy = board.map(row => [...row]);
+          boardCopy[fromRow][fromCol] = "";
+          boardCopy[toRow][toCol] = piece;
+          
+          // Check if this move would expose the AI's king
+          const exposedKing = ValidMoveCheckForCheck(boardCopy, "white");
+          
+          if(exposedKing){
+            // Mark this destination as dangerous
+            safeBoardCopy[toRow][toCol] = -99999;
+            console.log(`Marking move from (${fromRow},${fromCol}) to (${toRow},${toCol}) as dangerous - would expose king`);
+          }
+        });
+      }
+    }
+  }
+  
+  return safeBoardCopy;
 }
