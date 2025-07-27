@@ -8,9 +8,6 @@ export const getPossiblePawnMoves = (
 ): number[][] => {
   //calculate moves based off of the current position, make sure moves are not invalid and off of the board,
   // if the pawn is not in its starting position do not allow it to move two spaces
-
-  //pawn promotions later here
-
   //wont worry about enpessants for now because i dont even know what they are
 
   let possibleMoves: Array<number[]> = [];
@@ -36,12 +33,12 @@ export const getPossiblePawnMoves = (
       ) {
         attacks.push([row - 1, col - 1]);
       }
-      if (row == 6) {
+      if (row == 6 && (board[row - 2][col] === "")) {
         //starting position
         possibleMoves.push([row - 2, col]);
       }
       //check for promotion later
-      if (row - 1 >= 0 && board[row - 1][col] == "") {
+      if (row - 1 >= 0 && board[row - 1][col] === "") {
         possibleMoves.push([row - 1, col]);
       }
 
@@ -68,11 +65,11 @@ export const getPossiblePawnMoves = (
         blackAttacks.push([row + 1, col - 1]);
       }
 
-      if (row == 1) {
+      if (row == 1 && (board[row + 2][col] === "")) {
         possibleMoves.push([row + 2, col]);
       }
 
-      if (row + 1 <= 7 && board[row + 1][col] == "") {
+      if (row + 1 <= 7 && board[row + 1][col] === "") {
         possibleMoves.push([row + 1, col]);
       }
 
@@ -558,7 +555,7 @@ export const getPossibleKingMoves = (
 
 
       if (team == "white") {
-        const otherTeam = "black"; // todo, put this in a this in some sort of enum or something
+        const otherTeam = "black";
         switch (peice) {
           case "":
             break;

@@ -1,8 +1,8 @@
-import { useState, useRef} from "react";
+import { useState, useRef, useEffect} from "react";
 import Box from "../components/Box";
 import { getPossiblePawnMoves, getPossibleRookMoves, getPossibleBishopMoves, getPossibleKnightMoves, getPossibleKingMoves, getPossibleQueenMoves } from "../Utilities/moves";
 import { FindAGivenPeice, GetAllPossibleMovesForTeam, IsMoveArrayInGivenArray, ValidMoveCheckForCheck, GetPossibleMovesForAPeiceAtAPosition, SimulateMovesFromAnArray } from "../Utilities/Utilities";
-
+import { AIMove, HandleAICalculation } from "../Utilities/AICalculation";
 const Home = () => {
   const [selected, setSelected] = useState({
     peice: "",
@@ -28,23 +28,25 @@ const Home = () => {
   
   const [playingBoard, setPlayingBoard] = useState<string[][]>([
     
-    ["rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"],
-    ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"],
+    ["", "", "wqueen", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "king", "rook", "", "", "", "wrook", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn", "wpawn"],
-    ["wrook","wknight","wbishop","wqueen","wking","wbishop","wknight","wrook",],
+    ["","","wqueen","","wking","","","",],
   ]);
 
   //false = white turn
   //true = black turn
-  const [turn, setTurn] = useState<boolean>(false);
+  const [turn, setTurn] = useState<boolean | null>(null);
 
   const [confirm, setConfirm] = useState<boolean>(false);
 
   const [winner, setWinner] = useState<string>("");
+
+  const [staleMate, setStaleMate] = useState<boolean>(false);
 
   const whiteCheck = useRef<boolean>(false);
   const blackCheck = useRef<boolean>(false); 
@@ -53,7 +55,12 @@ const Home = () => {
 
   const [pawnPromotion, setPawnPromotion] = useState<string>("");
 
-  const [animationInProgress, setAnimationInProgress] = useState<boolean>(false);
+  const [startModalOpen, setStartModalOpen] = useState<boolean>(true);
+  const [singleplayer, setSingleplayer] = useState<boolean | null>(null);
+
+  const [difficultySelect, setDifficultySelect] = useState<string | null>(null);
+  const [difficultyModal, setDifficultyModal] = useState<boolean>(false);
+
 
   const HandlePromotion = (peiceType: string) => {
     let promotionBoard = playingBoard.map(row => [...row]);
@@ -78,6 +85,27 @@ const Home = () => {
       TurnEndCheckForCheck(promotionBoard);
       CheckForMate(promotionBoard, !turn)
   }
+
+  useEffect(() => {
+    if(singleplayer && turn){
+      console.log("blacks turn", turn)
+      
+      const aiMove: AIMove | null = HandleAICalculation(playingBoard, difficultySelect)
+      const newBoard = playingBoard.map(row => [...row]);
+      if (aiMove) {
+        
+        newBoard[aiMove.fromRow][aiMove.fromCol] = "";
+        newBoard[aiMove.toRow][aiMove.toCol] = aiMove.piece;
+        console.log('ais move', aiMove);
+        HandleMoveAnimation(aiMove.fromRow, aiMove.fromCol, aiMove.toRow, aiMove.toCol, () => HandleTurnChange(newBoard));
+      }else{
+        CheckForMate(newBoard, turn)
+        setStaleMate(true);
+      }
+    }
+  }, [turn])
+
+
   const HandleTurnChange = (newBoard: Array<string[]>) =>{
         setPlayingBoard(newBoard); 
         setSelected({ peice: "", team: "", row: -1, col: -1 });
@@ -90,10 +118,13 @@ const Home = () => {
 
         if(!boardPromotion){
           TurnEndCheckForCheck(newBoard);
+          if(turn != null){
           CheckForMate(newBoard, turn)
+          }
         }
         setTurn(!turn)
         setMessage("");
+
         return;
   }
 
@@ -140,6 +171,7 @@ const Home = () => {
     } 
   }
   
+  //using team as boolean and strings throughout the program is making things confusing, noting this down for future refactoring
   const CheckForMate = (board: Array<string[]>, team: boolean) =>{  
     if(team){
     for(let i = 0; i < board.length; i++){
@@ -153,7 +185,13 @@ const Home = () => {
         }
       }
     }
+    if(whiteCheck.current){
     setWinner("Black")
+    setTurn(null)
+    }else{
+      setStaleMate(true);
+      setTurn(null);
+    }
   }else{
     for(let i = 0; i < board.length; i++){
       for(let k = 0; k < board[i].length; k++){
@@ -166,7 +204,14 @@ const Home = () => {
         }
       }
     }
+    if(blackCheck.current){
     setWinner("White");
+    setTurn(null);
+    }else{
+      setStaleMate(true)
+      setTurn(null)
+    }
+
   }
 
   }
@@ -178,9 +223,10 @@ const Home = () => {
       }
       setConfirm(true)
     }else{
-      setPlayingBoard(startingPositions)
-      setConfirm(false)
-      setTurn(false)
+      setPlayingBoard(startingPositions);
+      setConfirm(false);
+      setTurn(null);
+      setStaleMate(false);
       setWinner("");
       whiteCheck.current = false;
       blackCheck.current = false;
@@ -201,7 +247,10 @@ const Home = () => {
     row: number,
     col: number
   ) => {
-    
+    if(startModalOpen || difficultyModal || winner != ""){
+      return;
+    }
+ 
     if (selected.peice == "" && selected.team == "") {
       switch (peice){
         case "wpawn":
@@ -249,6 +298,9 @@ const Home = () => {
       if(turn && peice.startsWith("w")){
         return
       }
+      if(turn == null){
+        return;
+      }
 
       setSelected({ peice, team, row, col });
       HighlightPossibleMoves(possibleMoves.current);
@@ -276,6 +328,7 @@ const Home = () => {
       newBoard[selected.row][selected.col] = ""
       newBoard[row][col] = selected.peice
 
+      
 
       //could in the future possibly refactor this repeated code down into its own module
       if(!turn && whiteCheck.current){
@@ -299,8 +352,9 @@ const Home = () => {
             return;
           }
         }
-      HandleMoveAnimation(selected.peice, selected.row, selected.col, row, col, ()=> HandleTurnChange(newBoard))
-      } 
+      HandleMoveAnimation(selected.row, selected.col, row, col, ()=> HandleTurnChange(newBoard))
+      }
+      
     }
     }else{
       //handle normal move no capture
@@ -316,36 +370,25 @@ const Home = () => {
         newBoard[row][col] = selected.peice; //copy the peice to the new board at the selected location
         newBoard[selected.row][selected.col] = ""; //remove the peice from the old location
 
-        //now check the newboard to see iff a king is in check for the team and if it blocks the check for them, if it does not we do not update the board or flip the turn we just reset
+        //now check the newboard to see iff a king is in check for the team and if it blocks the check for them,
+        // if it does not we do not update the board or flip the turn we just reset
         
-        if(!turn){
-          let result = ValidMoveCheckForCheck(newBoard, "black");
-          if(result){
-            setPlayingBoard(playingBoard)
-            if(!whiteCheck.current){
-            setMessage("Your king would be in check")
-            }
-            setSelected({ peice: "", team: "", row: -1, col: -1 })
-            ClearHighlights();
+
+        // itegrate this part of the equation into the ai so it removes moves that would put its king in check
+        let result = ValidMoveCheckForCheck(newBoard, (turn ? "white" : "black"));
+        if(result){
+          const message = "Your King would be exposed!"
+          setPlayingBoard(playingBoard);
+          setSelected({ peice: "", team: "", row: -1, col: -1 });
+          if((!whiteCheck.current && !turn) || (!blackCheck.current && turn)){
+            setMessage(message)
+          }
+          ClearHighlights();
             HandleFlash();
             return;
-          }
-        }
-        if(turn){
-          let result = ValidMoveCheckForCheck(newBoard, "white");
-          if(result){
-            setPlayingBoard(playingBoard)
-            setSelected({ peice: "", team: "", row: -1, col: -1 })
-            if(!blackCheck.current){
-            setMessage("Your king would be in check")
-            }
-            ClearHighlights();
-            HandleFlash();
-            return;
-          }
         }
 
-        HandleMoveAnimation(selected.peice, selected.row, selected.col, row, col, () => HandleTurnChange(newBoard))
+        HandleMoveAnimation(selected.row, selected.col, row, col, () => HandleTurnChange(newBoard))
         }else{
           return;
         }
@@ -354,7 +397,6 @@ const Home = () => {
   };
 
   const HandleMoveAnimation = (
-    peice: string,
     startRow: number,
     startCol: number,
     destinationRow: number,
@@ -367,7 +409,7 @@ const Home = () => {
     if (!startBox || !destinationBox) {
       const originalPiece = startBox?.querySelector('.peice') || startBox?.querySelector('img');
       if (originalPiece) {
-        originalPiece.style.visibility = 'visible';
+        (originalPiece as HTMLElement).style.visibility = 'visible';
       }
       onComplete();
       return;
@@ -493,6 +535,22 @@ const Home = () => {
       setIsFlashing(false);
     }, 500)
   }
+
+  const HandleDifficultyModal = () => {
+    setStartModalOpen(false);
+    setDifficultyModal(true);
+  }
+  const HandleSetDifficulty = (diff: string) => {
+  setDifficultySelect(diff);
+  setSingleplayer(true)
+  setDifficultyModal(false);
+  setTurn(false);
+  }
+  const HandleMultiplayer = () =>{
+    setTurn(false);
+    setSingleplayer(false);
+    setStartModalOpen(false);
+  }
   
   return (
     <div className="game">
@@ -515,6 +573,10 @@ const Home = () => {
         <div className="winner-box">
         <p className="winner-text">Checkmate: {winner} team wins!</p>
      </div> : <></>}
+     {staleMate ? 
+        <div className="winner-box">
+        <p className="winner-text">Stalemate</p>
+     </div> : <></>}
 
      
      </div>
@@ -532,6 +594,59 @@ const Home = () => {
     </div>
     
     : <></>}
+    {startModalOpen ? 
+    <div className="pawn-promotion-menu-container">
+      <div className="pawn-promotion-header-container">
+        <h2 className="pawn-promotion-header">Start Menu</h2>
+      </div>
+      <div className="pawn-promotion-list">
+        <button className="promotion-button" onClick={() => HandleDifficultyModal()}>Singleplayer</button>
+        <button className="promotion-button" onClick={() => HandleMultiplayer()}>Multiplayer</button>
+
+      </div>
+    </div> : <></>}
+
+    {difficultyModal ? 
+<div className="pawn-promotion-menu-container">
+  <div className="pawn-promotion-header-container">
+    <h2 className="pawn-promotion-header">Start Menu</h2>
+  </div>
+  <div className="difficulty-selection-container">
+    <div className="difficulty-option">
+      <button className="promotion-button" onClick={() => HandleSetDifficulty("easy")}>Easy</button>
+      <div className="description-column">
+        <p>Very aggressive</p>
+        <p>Unable to simulate moves ahead</p>
+      </div>
+    </div>
+    <div className="difficulty-option">
+      <button className="promotion-button" onClick={() => HandleSetDifficulty("medium")} disabled>Medium</button>
+      <div className="description-column">
+        <p>Balanced approach</p>
+        <p>Considers multiple moves</p>
+      </div>
+    </div>
+    <div className="difficulty-option">
+      <button className="promotion-button" onClick={() => HandleSetDifficulty("hard")} disabled>Hard</button>
+      <div className="description-column">
+        <p>Strategic planning</p>
+        <p>Advanced calculations</p>
+      </div>
+    </div>
+    <div className="difficulty-option">
+      <button className="promotion-button" onClick={() => HandleSetDifficulty("grandmaster")} disabled >Grand Master</button>
+      <div className="description-column">
+        <p>Master level play</p>
+        <p>Deep analysis</p>
+      </div>
+    </div>
+  </div>
+  <div className="extra-info-conatiner">
+    <div className="pawn-promotion-header-container">
+    <h2 className="pawn-promotion-header">Learn how the AI's Work on my <a href="https://github.com/cmac2112/Chess/wiki/How-The-AI's-Work">Github</a></h2>
+    </div>
+  </div>
+</div> : <></>}
     </div>
   );
 };
