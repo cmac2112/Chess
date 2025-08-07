@@ -69,6 +69,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 5px;
+
 }
 .turn-indicator{
   font-family: Arial, Helvetica, sans-serif;
@@ -86,21 +87,29 @@
   font-size: small;
   text-align: center;
   border-radius: 2rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .check-warning{
-  padding-inline: 1rem;
+  padding: 5px;
 }
 .winner-box{
+  min-width: 7rem;
+  min-height: 7rem;
   position: absolute;
   background-color: #f2ca5c;
   border-radius: 1rem;
-
+  border: 1px solid grey;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  align-items: center;
+  justify-content: center;
+  display: flex;
   
 }
 .winner-text{
   padding: 0.5rem;
   color: white;
+  justify-content: center;
 }
 
 .flash{
@@ -130,13 +139,76 @@
   margin: 1rem;
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
+}
+.description-container{
+  margin: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.description-column{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: smaller;
+  text-align: start;
+  word-wrap: break-word;
 }
 .promotion-button{
   padding-inline: 1rem;
-
+  width: 8rem;
 }
 .promotion-button:hover{
   cursor: pointer;
+}
+
+.difficulty-selection-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.difficulty-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.difficulty-option .promotion-button {
+  width: 100%;
+  max-width: 200px;
+}
+
+.difficulty-option .description-column {
+  width: 100%;
+  max-width: 200px;
+  min-height: 60px;
+  text-align: center;
+  font-size: 12px;
+  color: white;
+  padding: 0.25rem;
+  box-sizing: border-box;
+}
+
+.difficulty-option .description-column p {
+  margin: 0.1rem 0;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .difficulty-selection-container {
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  
+  .difficulty-option {
+    flex: 1;
+    min-width: 150px;
+    max-width: 200px;
+  }
 }
 @keyframes flash-animation{
   0% { background-color: transparent;}
@@ -156,5 +228,9 @@
   }
   .peice{
     height: 40px;
+  }
+  .info-bar{
+    max-width: 20rem;
+  min-height: 5rem;
   }
 }
