@@ -231,6 +231,7 @@ const Home = () => {
       whiteCheck.current = false;
       blackCheck.current = false;
       setMessage("");
+      setDifficultyModal(true)
       let button = document.getElementById("reset")
       if(button){
       button.innerText = "Reset"
